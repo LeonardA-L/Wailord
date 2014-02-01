@@ -1,0 +1,49 @@
+Foire aux idées :
+
+Le but est de marquer ici les différentes idées de chacun, d'améliorations possibles à l'application de base, qui seront faites (ou pas) selon le temps restant et/ou les compétences. N'hésitez pas à rajouter des trucs ou des questions aux idées des autres !
+
+#### Template d'idée :
+
+Description
+
+Idée proposée par : 
+Trouvent ça cool : 
+
+###################
+
+#### Mode je-scan-et-je-tourne-autour / Mode exploration :
+
+un mode comme dans LandscapAR qui permet de scanner le terrain, l'inspecter en tournant autour, et quand on appuie sur un bouton... Paf mode d'exploration, avec un moteur 3D tout con, qui consiste en :
+	- Caméra POV
+	- Gravité, tu tombes et tout ça
+	- 3 boutons de commande : 2 pour tourner, 1 pour activer de la propulsion
+Et avec ça on peut après aller explorer notre map de plus près et vraiment aller dedans. Ce qui se résumerait en un jeu vidéo dont la création de la map se fait à chaque début de partie.
+
+Idée proposée par : Léonard
+Trouvent ça cool : 
+
+###################
+
+
+#### Mode Landscape / Mode Labyrinthe :
+
+Deux créations possibles :
+- Mode landscape : les lignes sont parsées en ligne de niveau et on plaque dessus une texture un peu paysage / montage. En gros une copie conforme de landscapAR
+- Mode labyrinthe : les lignes sont parsées comme des murs verticaux de taille prédéfinie, pour dessiner le labyrinthe
+
+N-B : Le mode exploration du mode labyrinthe (si exploration il y a) ne permettrait pas de propulser à l'infini (sinon on passe vite au dessus des murs et c'est moins cool) mais plutôt juste de marcher à même le sol et parcourir le labyrinthe
+N-B 2 : Une IA qui résoud des labyrinthes qu'on lui pose ?
+
+Idée proposée par : Léonard
+Trouvent ça cool : 
+
+###################
+
+#### Mode Killing Machine
+
+Le but étant, en mode exploration, de pouvoir tirer. Tout simplement. Et si on inclut une IA (genre un chat) qui se balade dans l'environement avec pour but de nous trouver/nous éviter, c'est cool.
+
+N-B : ça ne se fera pas parce que c'est trop dur/long à faire, mais pouvoir jouer en LAN à un truc comme ça, ça serait bien.
+
+Idée proposée par : Julien
+Trouvent ça cool : Léonard

@@ -1,0 +1,30 @@
+Application de Réalité Augmentée
+
+cf LandscapAR :
+https://play.google.com/store/apps/details?id=de.berlin.reality.augmented.landscapar&hl=fr
+
+But de l'application :
+Parser des courbes de niveau et réaliser un modèle 3D.
+
+Différents modules :
+- Caméra
+	- Afficher caméra / Récupérer image en tableau de pixels
+	- Transformer en image noir/blanc pour numérisation
+	- Détecter et tracker la zone utile
+- Image et tableau de pixel
+	- parser une ligne depuis une image noir et blanc
+	- Savoir filtrer une couleur pour ne récupérer que les lignes de cette couleur
+- OpenGL :
+	- Afficher/Réaliser un modèle basique
+	- Appliquer une texture
+	- Faire bouger la caméra
+- Android
+	- Faire des boutons, transparents ou non
+
+Idées :
+- Pour le modèle 3D, il pourrait être basé sur un tableau 2D avec map[x][y] = z;
+- Mode je-scan-et-je-tourne-autour / Mode exploration
+- Selon la couleur faire des lignes de niveau / des obstacles verticaux de taille fixe
+
+
+Structure Objet et hiérarchie

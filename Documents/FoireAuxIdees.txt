@@ -47,3 +47,14 @@ N-B : ça ne se fera pas parce que c'est trop dur/long à faire, mais pouvoir joue
 
 Idée proposée par : Julien
 Trouvent ça cool : Léonard, Léo
+
+##################
+
+#### Exporter le modèle 3D
+
+Par exemple au format Blender. ça pourrait être fat comme moyen facile de création en vue de retravaillage. Mais ça sort du cadre de l'application.
+
+Idée proposée par : Léonard
+Trouvent ça cool : 
+
+###################

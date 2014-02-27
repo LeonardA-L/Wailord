@@ -1,7 +1,14 @@
 Application de Réalité Augmentée
 
-cf LandscapAR :
+Liens utiles
+
+# LandscapAR :
 https://play.google.com/store/apps/details?id=de.berlin.reality.augmented.landscapar&hl=fr
+# SdZ sur Android :
+http://fr.openclassrooms.com/informatique/cours/creez-des-applications-pour-android
+# Android Developpers :
+http://developer.android.com/develop/index.html
+
 
 But de l'application :
 Parser des courbes de niveau et réaliser un modèle 3D.

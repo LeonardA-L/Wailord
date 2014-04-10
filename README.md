@@ -1,4 +1,0 @@
-Wailord
-=======
-Kikou
-LOLILOL

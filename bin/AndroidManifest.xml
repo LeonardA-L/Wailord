@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="filRouge.wailord"
+    package="com.android.airhockey"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="7"
-        android:targetSdkVersion="8" />
+        android:minSdkVersion="10"
+        android:targetSdkVersion="17" />
 
     <application
         android:allowBackup="true"
@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="filRouge.wailord.MainActivity"
+            android:name="com.android.airhockey.AirHockeyActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

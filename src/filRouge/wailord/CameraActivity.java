@@ -96,44 +96,13 @@ public class CameraActivity extends Activity {
         public void onPictureTaken(byte[] data, Camera camera) {
         	
         	Bitmap picture = BitmapFactory.decodeByteArray(data, 0, data.length);
-        	
-        	/*
-        	Intent resultIntent = new Intent();
-        	resultIntent.putExtra("imageRetour", grayScale);
-        	setResult(Activity.RESULT_OK, resultIntent);
-        	finish();
-        	*/
-        	//((ImageView)findViewById(R.id.imageView1)).setImageBitmap(grayScale);
-        	toDisplay = picture;
-        	setImg();
-        	//finish();
-        	/*
-        	for(int i=0;i<data.length;i++){
-        		Log.d(TAG, ""+data[i]);
-        	}
-        	*/
-        	/*
-            File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
-            if (pictureFile == null){
-                Log.d(TAG, "Error creating media file, check storage permissions: " +
-                    e.getMessage());
-                return;
-            }
+        	setImg(picture);
 
-            try {
-                FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
-                fos.close();
-            } catch (FileNotFoundException e) {
-                Log.d(TAG, "File not found: " + e.getMessage());
-            } catch (IOException e) {
-                Log.d(TAG, "Error accessing file: " + e.getMessage());
-            }
-            */
         }
     };
     
-    public void setImg (){
+    public void setImg (Bitmap newImage){
+    	toDisplay = newImage;
     	toDisplay = toBinary(toGrayscale(toDisplay));
     	img.setImageBitmap(this.toDisplay);
     }

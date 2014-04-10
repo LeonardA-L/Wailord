@@ -194,8 +194,13 @@ public class AirHockeyRenderer implements Renderer {
         
         setIdentityM(modelMatrix, 0);
         
-        translateM(modelMatrix, 0, -0.2f, 0f, -2f);        
-        rotateM(modelMatrix, 0, -60f, 1f, 0f, 0f);
+        translateM(modelMatrix, 0, 0f, 0f, -2.1f);  
+        // rotateM : 
+        // 1 : matrice de rotation
+        // 2 : offSet : ne pas toucher
+        // 3 : rotation en degrés
+        // 4, 5, 6 : poids des composants des axes x, y ,z
+        rotateM(modelMatrix, 0, -70f, 0.3f, 0.3f, 0.3f);
         
         final float[] temp = new float[16];
         multiplyMM(temp, 0, projectionMatrix, 0, modelMatrix, 0);        

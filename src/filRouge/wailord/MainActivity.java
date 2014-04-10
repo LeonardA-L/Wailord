@@ -5,30 +5,29 @@ import java.util.List;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
-
+	private TextView log = null;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        SurfaceView surface = (SurfaceView)findViewById(R.id.surfaceView);
-        SurfaceHolder holder = surface.getHolder();
-        holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-        
-        Camera camera = Camera.open();
-        Camera.Parameters params = camera.getParameters();
+        Intent secondeActivite = new Intent(MainActivity.this, CameraActivity.class);
+     // On rajoute un extra
+        //secondeActivite.putExtra(AGE, 31);
 
-        // Pour connaître les modes de flash supportés
-        List<String> flashs = params.getSupportedFlashModes();
-
-        takePicture(camera);
+        // Puis on lance l'intent !
+        startActivity(secondeActivite);
     }
 
 
@@ -39,17 +38,6 @@ public class MainActivity extends Activity {
         return true;
     }
     
-    private void takePicture(Camera camera) {
-    	  // Jouera un son au moment où on prend une photo
-
-    	  // Sera lancée une fois l'image traitée, on enregistre l'image sur le support externe
-    	  Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
-    	    public void onPictureTaken(byte[] data, Camera camera) {
-    	      
-    	    }
-    	  };
-    	    
-    	  camera.takePicture(null, null, jpegCallback);
-    	}
+    
     
 }

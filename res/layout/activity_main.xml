@@ -14,11 +14,5 @@
         android:layout_height="wrap_content"
         android:text="@string/hello_world" />
 
-    <SurfaceView
-        android:id="@+id/surfaceView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_alignTop="@+id/textView1" />
 
 </RelativeLayout>

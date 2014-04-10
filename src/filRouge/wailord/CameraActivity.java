@@ -1,16 +1,24 @@
 package filRouge.wailord;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 public class CameraActivity extends Activity {
 	private static final String TAG = "CActivity";
@@ -74,10 +82,25 @@ public class CameraActivity extends Activity {
         }
     }
     
+    
+    
+    
     private PictureCallback mPicture = new PictureCallback() {
 
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
+        	
+        	Bitmap picture = BitmapFactory.decodeByteArray(data, 0, data.length);
+        	
+        	/*
+        	Intent resultIntent = new Intent();
+        	resultIntent.putExtra("imageRetour", grayScale);
+        	setResult(Activity.RESULT_OK, resultIntent);
+        	finish();
+        	*/
+        	//((ImageView)findViewById(R.id.imageView1)).setImageBitmap(grayScale);
+        	MainActivity.toDisplay = picture;
+        	finish();
         	/*
         	for(int i=0;i<data.length;i++){
         		Log.d(TAG, ""+data[i]);

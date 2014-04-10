@@ -3,6 +3,7 @@ package filRouge.wailord;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
@@ -24,12 +25,16 @@ public class CameraActivity extends Activity {
 	private static final String TAG = "CActivity";
     private Camera mCamera;
     private CameraPreview mPreview;
+    
+    private ImageView img = null;
+    private Bitmap toDisplay = Bitmap.createBitmap(320,240, Bitmap.Config.RGB_565);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
+        img = (ImageView)(findViewById(R.id.imageView1));
         // Create an instance of Camera
         mCamera = getCameraInstance();
         if(mCamera == null){
@@ -99,8 +104,9 @@ public class CameraActivity extends Activity {
         	finish();
         	*/
         	//((ImageView)findViewById(R.id.imageView1)).setImageBitmap(grayScale);
-        	MainActivity.toDisplay = picture;
-        	finish();
+        	toDisplay = picture;
+        	setImg();
+        	//finish();
         	/*
         	for(int i=0;i<data.length;i++){
         		Log.d(TAG, ""+data[i]);
@@ -126,4 +132,51 @@ public class CameraActivity extends Activity {
             */
         }
     };
+    
+    public void setImg (){
+    	toDisplay = toBinary(toGrayscale(toDisplay));
+    	img.setImageBitmap(this.toDisplay);
+    }
+    
+    public Bitmap toBinary(Bitmap bmpOriginal) {
+        int width, height, threshold;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+        threshold = 127;
+        Bitmap bmpBinary = Bitmap.createBitmap(bmpOriginal);
+
+        for(int x = 0; x < width; ++x) {
+            for(int y = 0; y < height; ++y) {
+                // get one pixel color
+                int pixel = bmpOriginal.getPixel(x, y);
+                int red = Color.red(pixel);
+
+                //get binary value
+                if(red < threshold){
+                    bmpBinary.setPixel(x, y, 0xFF000000);
+                } else{
+                    bmpBinary.setPixel(x, y, 0xFFFFFFFF);
+                }
+
+            }
+        }
+        return bmpBinary;
+    }
+    
+    public Bitmap toGrayscale(Bitmap bmpOriginal)
+    {        
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();    
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return bmpGrayscale;
+    }
 }

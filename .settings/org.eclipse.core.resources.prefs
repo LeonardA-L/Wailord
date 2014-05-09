@@ -1,5 +1,3 @@
 eclipse.preferences.version=1
-encoding//src/com/android/airhockey/AirHockeyActivity.java=UTF-8
-encoding//src/com/android/airhockey/AirHockeyRenderer.java=UTF-8
-encoding//src/com/android/airhockey/objects/Cube.java=UTF-8
-encoding//src/com/android/airhockey/objects/Table.java=UTF-8
+encoding//src/com/wailord/cubegl/Cube.java=UTF-8
+encoding//src/com/wailord/cubegl/Nappe.java=UTF-8

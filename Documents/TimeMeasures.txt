@@ -1,2 +1,4 @@
 Measurement of time between stopping Vuforia and reactivating it
-No Optimisation : 33
+No Optimisation : 33s
+Size set to 640/480 : 3s
+JPG Quality divided by 2 : 3s (canceled)

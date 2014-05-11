@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.os.Build;
 import android.os.Bundle;
@@ -1054,6 +1055,19 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         //Log.d(LOGTAG,"Creating Camera");
         try {
         	mTheCamera = Camera.open(); // attempt to get a Camera instance
+        	int width = mTheCamera.getParameters().getPictureSize().width;
+        	int height = mTheCamera.getParameters().getPictureSize().height;
+        	Log.d(LOGTAG,"Original Camera Size : " +height+" : "+ mTheCamera.getParameters().getPictureFormat());
+        	double fac = (640/(double)width);
+        	width = 640;
+        	height*=fac;
+        	Log.d(LOGTAG,"New Camera Size : " +height);
+        	
+        	Parameters params = mTheCamera.getParameters();
+        	params.setPictureSize(width, height);
+        	//params.set("jpeg-quality", 35);
+        	mTheCamera.setParameters(params);
+        	
         	mTheCamera.startPreview();
             //Log.d(LOGTAG,"ok Camera");
         	mTheCamera.takePicture(null, null, mPicture);
@@ -1159,6 +1173,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         int width, height, threshold;
         height = bmpOriginal.getHeight();
         width = bmpOriginal.getWidth();
+        Log.d(LOGTAG,"Actual width :"+width);
         threshold = 127;
         Bitmap bmpBinary = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
 

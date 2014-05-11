@@ -1,0 +1,2 @@
+Measurement of time between stopping Vuforia and reactivating it
+No Optimisation : 33

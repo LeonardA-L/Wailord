@@ -108,7 +108,9 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     Camera mTheCamera;
     private Bitmap mPictureData;
     
-    
+    // Time Measurement
+    long start;
+    long end;
     
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1047,6 +1049,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         CameraDevice cameraDevice = CameraDevice.getInstance();
         cameraDevice.stop();
         cameraDevice.deinit();
+        start = System.currentTimeMillis();
         mTheCamera = null;
         //Log.d(LOGTAG,"Creating Camera");
         try {
@@ -1070,7 +1073,10 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     	if(mTheCamera!=null){
         	mTheCamera.release();
         }
-    	Log.d(LOGTAG,"Picture after : "+pictureTaken);
+    	
+    	end = System.currentTimeMillis();
+    	Log.d(LOGTAG,"Elapsed Time : "+(end-start)/1000);
+    	
     	CameraDevice cameraDevice = CameraDevice.getInstance();
         cameraDevice.init(mCamera);
         cameraDevice.start();
@@ -1146,6 +1152,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     	//TODO: Leo : Do your thing, buddy !
     	
     	//TODO: Julien : Do your thing, buddy !
+    	
     }
     
     public Bitmap toBinary(Bitmap bmpOriginal) {

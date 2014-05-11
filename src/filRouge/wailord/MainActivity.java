@@ -108,6 +108,8 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     
     Camera mTheCamera;
     private Bitmap mPictureData;
+    private int[][] mProcessedImage;
+    public static final int CAMERA_WIDTH = 640;
     
     // Time Measurement
     long start;
@@ -1057,9 +1059,9 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         	int width = mTheCamera.getParameters().getPictureSize().width;
         	int height = mTheCamera.getParameters().getPictureSize().height;
         	Log.d(LOGTAG,"Original Camera Size : " +height+" : "+ mTheCamera.getParameters().getPictureFormat());
-        	double fac = (640/(double)width);
+        	double fac = (CAMERA_WIDTH/(double)width);
         	//double fac = 1;
-        	width = 640;
+        	width = CAMERA_WIDTH;
         	height*=fac;
         	Log.d(LOGTAG,"New Camera Size : " +height);
         	
@@ -1168,14 +1170,15 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     
     public void processPicture(){
     	// Shows the loading dialog
-    	mPictureData = toBinary(mPictureData);
-    	
+    	//mPictureData = toBinary(mPictureData);
+    	mProcessedImage = toBinary(mPictureData);
     	//TODO: Leo : Do your thing, buddy !
     	
     	//TODO: Julien : Do your thing, buddy !
     	
     }
     
+    /*
     public Bitmap toBinary(Bitmap bmpOriginal) {
         int width, height, threshold;
         height = bmpOriginal.getHeight();
@@ -1201,5 +1204,32 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         }
         return bmpBinary;
     }
-    
+    */
+    public int[][] toBinary(Bitmap bmpOriginal) {
+        int width, height, threshold;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+        Log.d(LOGTAG,"Actual width :"+width);
+        threshold = 127;
+        int[][] bmpBinary = new int[height][width];
+
+        for(int x = 0; x < width; ++x) {
+            for(int y = 0; y < height; ++y) {
+                // get one pixel color
+                int pixel = bmpOriginal.getPixel(x, y);
+                int value = (int)(((double)Color.red(pixel))*0.2126 + ((double)Color.green(pixel))*0.7152 + ((double)Color.blue(pixel))*0.0722) ;
+                // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
+                //get binary value
+                if(value < threshold){
+                	bmpBinary[y][x] = 0;
+                    //bmpBinary.setPixel(x, y, 0xFF000000);
+                } else{
+                	bmpBinary[y][x] = 1;
+                    //bmpBinary.setPixel(x, y, 0xFFFFFFFF);
+                }
+
+            }
+        }
+        return bmpBinary;
+    }
 }

@@ -137,13 +137,12 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
 	
 	// camera picture retrieving
     private PictureCallback mPicture = new PictureCallback() {
-    	private static final String LOGTAG = "PictureCallBack";
+    	//private static final String LOGTAG = "PictureCallBack";
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
         //Log.d(LOGTAG,"Picturing...");
         pictureTaken = true;
         mPictureData = BitmapFactory.decodeByteArray(data, 0, data.length);
-        processPicture();
          //Log.d(LOGTAG,"Ok Picture "+picture.getPixel(10, 10));
          handleCameraVuforia();
         }
@@ -1105,6 +1104,8 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
             // Builds the new target
             startBuild();
         }
+        
+        processPicture();
     }
     
     boolean isUserDefinedTargetsRunning()

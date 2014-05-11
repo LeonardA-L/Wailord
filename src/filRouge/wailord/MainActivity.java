@@ -6,7 +6,11 @@ import java.util.Vector;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -55,6 +59,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     private boolean mFlash = false;
     private boolean mContAutofocus = false;
     private boolean mExtendedTracking = false;
+    private boolean pictureTaken = false;
     int targetBuilderCounter = 1;
     
     private View mFlashOptionView;
@@ -100,6 +105,9 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
    
     boolean mIsDroidDevice = false;
     
+    Camera mTheCamera;
+    private Bitmap mPictureData;
+    
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
     	Log.d(LOGTAG, "onCreate");
@@ -121,6 +129,19 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                 "droid");
     }
+	
+	// camera picture retrieving
+    private PictureCallback mPicture = new PictureCallback() {
+    	private static final String LOGTAG = "PictureCallBack";
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+        //Log.d(LOGTAG,"Picturing...");
+        pictureTaken = true;
+        mPictureData = BitmapFactory.decodeByteArray(data, 0, data.length);
+         //Log.d(LOGTAG,"Ok Picture "+picture.getPixel(10, 10));
+         handleCameraVuforia();
+        }
+    };
 	
 	// Called when the activity will start interacting with the user.
     @Override
@@ -718,7 +739,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
 	@Override
     public void onQCARUpdate(State state)
     {
-		Log.d(LOGTAG, "QCAR Update Mofos");
+		//Log.d(LOGTAG, "QCAR Update Mofos");
         TrackerManager trackerManager = TrackerManager.getInstance();
         ImageTracker imageTracker = (ImageTracker) trackerManager
             .getTracker(ImageTracker.getClassType());
@@ -751,6 +772,12 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
             // Add new trackable source
             Trackable trackable = dataSetUserDef
                 .createTrackable(refFreeFrame.getNewTrackableSource());
+            
+            /*
+            Log.d(LOGTAG,"N : "+dataSetUserDef.getNumTrackables());
+            Log.d(LOGTAG,"tr cr "+trackable);
+            Log.d(LOGTAG,"tr 0 "+dataSetUserDef.getTrackable(dataSetUserDef.getNumTrackables() - 1));
+             */
             
             // Reactivate current dataset
             imageTracker.activateDataSet(dataSetUserDef);
@@ -860,8 +887,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         
     }
     
-    //TODO: OPEN GL BRING IT ON :
-    
+
     public void onSurfaceChanged(int width, int height)
     {
         Vuforia.onSurfaceChanged(width, height);
@@ -1013,6 +1039,40 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
  // Button Camera clicked
     public void onCameraClick(View v)
     {
+    	//TODO: Retrieving Camera data
+    	// -----------------------------
+        CameraDevice cameraDevice = CameraDevice.getInstance();
+        cameraDevice.stop();
+        cameraDevice.deinit();
+        mTheCamera = null;
+        //Log.d(LOGTAG,"Creating Camera");
+        try {
+        	mTheCamera = Camera.open(); // attempt to get a Camera instance
+        	mTheCamera.startPreview();
+            //Log.d(LOGTAG,"ok Camera");
+        	mTheCamera.takePicture(null, null, mPicture);
+        	
+            //while(!pictureTaken){
+            //Log.d(LOGTAG,"Picture : "+pictureTaken);
+            //}
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        
+    }
+    
+    public void handleCameraVuforia(){
+    	mTheCamera.stopPreview();
+    	if(mTheCamera!=null){
+        	mTheCamera.release();
+        }
+    	Log.d(LOGTAG,"Picture after : "+pictureTaken);
+    	CameraDevice cameraDevice = CameraDevice.getInstance();
+        cameraDevice.init(mCamera);
+        cameraDevice.start();
+    	
+    	// -----------------------------
         if (isUserDefinedTargetsRunning())
         {
             // Shows the loading dialog
@@ -1076,4 +1136,6 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
             }
         }
     }
+    
+    
 }

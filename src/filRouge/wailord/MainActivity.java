@@ -1049,7 +1049,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         CameraDevice cameraDevice = CameraDevice.getInstance();
         cameraDevice.stop();
         cameraDevice.deinit();
-        start = System.currentTimeMillis();
+        
         mTheCamera = null;
         //Log.d(LOGTAG,"Creating Camera");
         try {
@@ -1058,6 +1058,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         	int height = mTheCamera.getParameters().getPictureSize().height;
         	Log.d(LOGTAG,"Original Camera Size : " +height+" : "+ mTheCamera.getParameters().getPictureFormat());
         	double fac = (640/(double)width);
+        	//double fac = 1;
         	width = 640;
         	height*=fac;
         	Log.d(LOGTAG,"New Camera Size : " +height);
@@ -1069,6 +1070,8 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         	
         	mTheCamera.startPreview();
             //Log.d(LOGTAG,"ok Camera");
+        	
+        	start = System.currentTimeMillis();
         	mTheCamera.takePicture(null, null, mPicture);
         	
             //while(!pictureTaken){
@@ -1082,18 +1085,17 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     }
     
     public void handleCameraVuforia(){
-    	mTheCamera.stopPreview();
-    	if(mTheCamera!=null){
+    	//mTheCamera.stopPreview();
+    	//if(mTheCamera!=null){
         	mTheCamera.release();
-        }
+        //}
     	
-    	end = System.currentTimeMillis();
-    	Log.d(LOGTAG,"Elapsed Time : "+(end-start)/1000);
     	
     	CameraDevice cameraDevice = CameraDevice.getInstance();
-        cameraDevice.init(mCamera);
+    	cameraDevice.init(mCamera);
         cameraDevice.start();
-    	
+        end = System.currentTimeMillis();
+    	Log.d(LOGTAG,"Time between two photos : "+(end-start));
     	// -----------------------------
         if (isUserDefinedTargetsRunning())
         {
@@ -1105,7 +1107,10 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
             startBuild();
         }
         
+        start = System.currentTimeMillis();
         processPicture();
+        end = System.currentTimeMillis();
+    	Log.d(LOGTAG,"Processing Time : "+(end-start));
     }
     
     boolean isUserDefinedTargetsRunning()
@@ -1162,6 +1167,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     }
     
     public void processPicture(){
+    	// Shows the loading dialog
     	mPictureData = toBinary(mPictureData);
     	
     	//TODO: Leo : Do your thing, buddy !

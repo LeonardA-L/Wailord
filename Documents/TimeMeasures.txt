@@ -3,3 +3,11 @@ No Optimisation : 33s
 Size set to 640/480 : 3s
 JPG Quality divided by 2 : 3s (canceled)
 Doing processing of the picture after reactivating Vuforia : 2s
+
+------------------ After having cut in two parts
+
+Time between the two photos :
+No Optimisation (except the ones above) : 2498ms
+
+Processing Time (processPicture()) :
+No Optimisation (except the ones above) : 1110ms

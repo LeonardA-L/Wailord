@@ -108,6 +108,8 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     Camera mTheCamera;
     private Bitmap mPictureData;
     
+    
+    
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
     	Log.d(LOGTAG, "onCreate");
@@ -138,6 +140,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         //Log.d(LOGTAG,"Picturing...");
         pictureTaken = true;
         mPictureData = BitmapFactory.decodeByteArray(data, 0, data.length);
+        processPicture();
          //Log.d(LOGTAG,"Ok Picture "+picture.getPixel(10, 10));
          handleCameraVuforia();
         }
@@ -1137,5 +1140,37 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         }
     }
     
+    public void processPicture(){
+    	mPictureData = toBinary(mPictureData);
+    	
+    	//TODO: Leo : Do your thing, buddy !
+    	
+    	//TODO: Julien : Do your thing, buddy !
+    }
+    
+    public Bitmap toBinary(Bitmap bmpOriginal) {
+        int width, height, threshold;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+        threshold = 127;
+        Bitmap bmpBinary = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
+
+        for(int x = 0; x < width; ++x) {
+            for(int y = 0; y < height; ++y) {
+                // get one pixel color
+                int pixel = bmpOriginal.getPixel(x, y);
+                int value = (int)(((double)Color.red(pixel))*0.2126 + ((double)Color.green(pixel))*0.7152 + ((double)Color.blue(pixel))*0.0722) ;
+                // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
+                //get binary value
+                if(value < threshold){
+                    bmpBinary.setPixel(x, y, 0xFF000000);
+                } else{
+                    bmpBinary.setPixel(x, y, 0xFFFFFFFF);
+                }
+
+            }
+        }
+        return bmpBinary;
+    }
     
 }

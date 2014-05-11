@@ -9,5 +9,8 @@ Doing processing of the picture after reactivating Vuforia : 2s
 Time between the two photos :
 No Optimisation (except the ones above) : 2498ms
 
-Processing Time (processPicture()) :
+Processing Time (processPicture()) average :
 No Optimisation (except the ones above) : 1110ms
+Switching from Bitmap to int[][] structure : 607ms
+Switching from double to int (640*480*3 times) : Same
+Kicking the division in the balls (640*480*3 times) : 580ms

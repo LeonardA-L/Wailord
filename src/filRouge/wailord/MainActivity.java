@@ -110,6 +110,9 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     private Bitmap mPictureData;
     private int[][] mProcessedImage;
     public static final int CAMERA_WIDTH = 640;
+    public static final int LEO_HIGH = 1;
+    public static final int LEO_LOW = 0;
+
     
     // Time Measurement
     long start;
@@ -1089,7 +1092,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     public void handleCameraVuforia(){
     	//mTheCamera.stopPreview();
     	//if(mTheCamera!=null){
-        	mTheCamera.release();
+        mTheCamera.release();
         //}
     	
     	
@@ -1178,53 +1181,27 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     	
     }
     
-    /*
-    public Bitmap toBinary(Bitmap bmpOriginal) {
-        int width, height, threshold;
-        height = bmpOriginal.getHeight();
-        width = bmpOriginal.getWidth();
-        Log.d(LOGTAG,"Actual width :"+width);
-        threshold = 127;
-        Bitmap bmpBinary = Bitmap.createBitmap(width,height,Bitmap.Config.RGB_565);
 
-        for(int x = 0; x < width; ++x) {
-            for(int y = 0; y < height; ++y) {
-                // get one pixel color
-                int pixel = bmpOriginal.getPixel(x, y);
-                int value = (int)(((double)Color.red(pixel))*0.2126 + ((double)Color.green(pixel))*0.7152 + ((double)Color.blue(pixel))*0.0722) ;
-                // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
-                //get binary value
-                if(value < threshold){
-                    bmpBinary.setPixel(x, y, 0xFF000000);
-                } else{
-                    bmpBinary.setPixel(x, y, 0xFFFFFFFF);
-                }
-
-            }
-        }
-        return bmpBinary;
-    }
-    */
     public int[][] toBinary(Bitmap bmpOriginal) {
         int width, height, threshold;
         height = bmpOriginal.getHeight();
-        width = bmpOriginal.getWidth();
-        Log.d(LOGTAG,"Actual width :"+width);
-        threshold = 127;
+        width = CAMERA_WIDTH;
+        threshold = 127000;
         int[][] bmpBinary = new int[height][width];
 
         for(int x = 0; x < width; ++x) {
             for(int y = 0; y < height; ++y) {
                 // get one pixel color
                 int pixel = bmpOriginal.getPixel(x, y);
-                int value = (int)(((double)Color.red(pixel))*0.2126 + ((double)Color.green(pixel))*0.7152 + ((double)Color.blue(pixel))*0.0722) ;
+                //int value = (int)(((float)Color.red(pixel))*0.2126 + ((float)Color.green(pixel))*0.7152 + ((float)Color.blue(pixel))*0.0722) ;
+                int value = (int)((Color.red(pixel)*212 + Color.green(pixel)*715 + Color.blue(pixel)*722)) ;
                 // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
                 //get binary value
                 if(value < threshold){
-                	bmpBinary[y][x] = 0;
+                	bmpBinary[y][x] = LEO_LOW;
                     //bmpBinary.setPixel(x, y, 0xFF000000);
                 } else{
-                	bmpBinary[y][x] = 1;
+                	bmpBinary[y][x] = LEO_HIGH;
                     //bmpBinary.setPixel(x, y, 0xFFFFFFFF);
                 }
 

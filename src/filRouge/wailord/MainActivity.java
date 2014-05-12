@@ -14,10 +14,13 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -48,7 +51,7 @@ import com.qualcomm.vuforia.Vuforia.UpdateCallbackInterface;
 public class MainActivity extends Activity implements UpdateCallbackInterface, AppControl {
 
 	private static final String LOGTAG = "leMain";
-    //private GestureDetector mGestureDetector;
+    private GestureDetector mGestureDetector;
     private Activity m_activity;
     // Vuforia initialization flags:
     private int mVuforiaFlags = 0;
@@ -82,12 +85,14 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     // loading operation to finish before shutting down Vuforia:
     public Object mShutdownLock = new Object();
     
-    // OpenGL MADAFAKA
+    // ----- OpenGL MADAFAKA
     private WailordApplicationGLView mGlView;
     // Stores the projection matrix to use for rendering purposes
     private Matrix44F mProjectionMatrix;
- // The textures we will use for rendering:
+    // The textures we will use for rendering:
     private Vector<Texture> mTextures;
+    RefFreeFrame refFreeFrame;
+    private WailordTargetRenderer mRenderer;
     
     // View overlays to be displayed in the Augmented View
     private RelativeLayout mUILayout;
@@ -100,9 +105,6 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     private LoadingDialogHandler loadingDialogHandler = new LoadingDialogHandler(
             this);
     
-
-    RefFreeFrame refFreeFrame;
-    private WailordTargetRenderer mRenderer;
    
     boolean mIsDroidDevice = false;
     
@@ -132,9 +134,9 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         mTextures = new Vector<Texture>();
         loadTextures();
         
-       // Supposed to handle autofocus. Not yet.
+       // Supposed to handle autofocus
        // The class is in the UserDefinedTarget sample
-       // mGestureDetector = new GestureDetector(this, new GestureListener());
+       mGestureDetector = new GestureDetector(this, new GestureListener());
         
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                 "droid");
@@ -1042,7 +1044,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
  // Button Camera clicked
     public void onCameraClick(View v)
     {
-    	//TODO: Retrieving Camera data
+    	
     	// -----------------------------
         CameraDevice cameraDevice = CameraDevice.getInstance();
         cameraDevice.stop();
@@ -1068,6 +1070,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         	
         	mTheCamera.startPreview();
             //Log.d(LOGTAG,"ok Camera");
+        	
         	
         	start = System.currentTimeMillis();
         	mTheCamera.takePicture(null, null, mPicture);
@@ -1201,5 +1204,51 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
             }
         }
         return bmpBinary;
+    }
+    
+ // Process Single Tap event to trigger autofocus
+    private class GestureListener extends
+        GestureDetector.SimpleOnGestureListener
+    {
+        // Used to set autofocus one second after a manual focus is triggered
+        private final Handler autofocusHandler = new Handler();
+        
+        
+        @Override
+        public boolean onDown(MotionEvent e)
+        {
+            return true;
+        }
+        
+        
+        @Override
+        public boolean onSingleTapUp(MotionEvent e)
+        {
+            // Generates a Handler to trigger autofocus
+            // after 1 second
+            autofocusHandler.postDelayed(new Runnable()
+            {
+                public void run()
+                {
+                    boolean result = CameraDevice.getInstance().setFocusMode(
+                        CameraDevice.FOCUS_MODE.FOCUS_MODE_TRIGGERAUTO);
+                    
+                    if (!result)
+                        Log.e("SingleTapUp", "Unable to trigger focus");
+                }
+            }, 1000L);
+            
+            return true;
+        }
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        // Process the Gestures
+        if (!m_started)
+            return true;
+        
+        return mGestureDetector.onTouchEvent(event);
     }
 }

@@ -1,0 +1,10 @@
+Where is the OpenGL related stuff in all this mess :
+- WailordApplicationGLView.java : is the transparent view with the 3D model displayed on it.
+- WailordTargetRenderer.java : is the renderer and handles the actual 3D model processing (see attribute mTeapot 'n' stuff)
+- RefFreeFrame(GL) : I don't understand those but they are related to the OpenGL thingy.
+- MainActivity.java : 
+	- processPicture() : there's a time and a place to use the data harvested by the camera to build you 3D object. This is it.
+	- Check the mProjectionMatrix attribute
+	- addOverlayView() : related to the layout and its contents
+	- initApplicationAR() : for initialization of stuff
+	- Attributes see under the "OpenGL MADAFAKA" comment

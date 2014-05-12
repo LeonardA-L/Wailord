@@ -703,13 +703,6 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
 	                Log.e(LOGTAG, "Unable to enable continuous autofocus");
 	            }
 	            
-	            /*
-	            setSampleAppMenuAdditionalViews();
-	            mSampleAppMenu = new SampleAppMenu(this, this,
-	                "User Defined Targets", mGlView, mUILayout,
-	                mSettingsAdditionalViews);
-	            setSampleAppMenuSettings();
-	            */
 	        } else
 	        {
 	            Log.e(LOGTAG, exception.getString());
@@ -1194,7 +1187,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
                 // get one pixel color
                 int pixel = bmpOriginal.getPixel(x, y);
                 //int value = (int)(((float)Color.red(pixel))*0.2126 + ((float)Color.green(pixel))*0.7152 + ((float)Color.blue(pixel))*0.0722) ;
-                int value = (int)((Color.red(pixel)*212 + Color.green(pixel)*715 + Color.blue(pixel)*722)) ;
+                int value = (Color.red(pixel)*212 + Color.green(pixel)*715 + Color.blue(pixel)*722) ;
                 // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
                 //get binary value
                 if(value < threshold){

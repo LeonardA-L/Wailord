@@ -1198,10 +1198,10 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
                 // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
                 //get binary value
                 if(value < threshold){
-                	bmpBinary[y][x] = LEO_LOW;
+                	bmpBinary[y][x] = LEO_HIGH;
                     //bmpBinary.setPixel(x, y, 0xFF000000);
                 } else{
-                	bmpBinary[y][x] = LEO_HIGH;
+                	bmpBinary[y][x] = LEO_LOW;
                     //bmpBinary.setPixel(x, y, 0xFFFFFFFF);
                 }
 

@@ -1,13 +1,19 @@
-package testswailord;
+package filRouge.wailord;
 
 import java.util.ArrayList;
 
 public abstract class LevelLines {
-    public static void fillHeightsInMap(int N, int[][] shapeMap, Point[][] pointMap, int height){
+    /**
+     * Will detect level lines in the shapeMap (and the corresponding pointMap) and replace them with the corresponding height
+     * @param shapeMap an integer map with 0 for non-level line tile and 1 for level lines
+     * @param pointMap a representation of the map with Points
+     * @param height the height between two level lines
+     */
+    public static void fillHeightsInMap(int[][] shapeMap, Point[][] pointMap, int height){
         int level = 2;
         int countFalses = 0;
         while(countFalses < 2){
-            boolean b = fillTheBlank(N,shapeMap,pointMap,level,height);
+            boolean b = fillTheBlank(shapeMap,pointMap,level,height);
             //System.out.println(b);
             if(!b){
                 level++;
@@ -18,14 +24,23 @@ public abstract class LevelLines {
             }
         }
     }
-    
-    public static boolean fillTheBlank(int N, int[][] shapeMap, Point[][] pointMap, int level, int height){
+
+
+    /**
+     * Will highlight the first level line it finds, with the designated level and height
+     * @param shapeMap the height map
+     * @param pointMap the coordinates map
+     * @param level the current line level
+     * @param height the height between two level lines
+     * @return a boolean wether or not a line was found
+     */
+    public static boolean fillTheBlank(int[][] shapeMap, Point[][] pointMap, int level, int height){
         ArrayList<Point> openList = new ArrayList<Point>();
         ArrayList<Point> closeList = new ArrayList<Point>();
         Point startPoint = null;
         
-        for(int i=0;i<N;i++){
-            for(int j=0;j<N;j++){
+        for(int i=0;i<shapeMap.length;i++){
+            for(int j=0;j<shapeMap[i].length;j++){
                 
                     if(shapeMap[i][j] == 0){
                         startPoint = pointMap[i][j];
@@ -45,7 +60,7 @@ public abstract class LevelLines {
             //System.out.println(openList);
             Point victim = openList.get(0);
             openList.remove(0);
-            ArrayList<Point> vlist = surroundings(victim,false, N, pointMap);
+            ArrayList<Point> vlist = surroundings(victim,false, pointMap);
             for(Point p:vlist){
                 if(shapeMap[p.y][p.x] < (level*height)){
                     if(!closeList.contains(p)){
@@ -74,7 +89,7 @@ public abstract class LevelLines {
                 //System.out.println(openList);
                 Point victim = openList.get(0);
                 openList.remove(0);
-                ArrayList<Point> vlist = surroundings(victim,true,N,pointMap);
+                ArrayList<Point> vlist = surroundings(victim,true,pointMap);
                 for(Point p:vlist){
                     if(shapeMap[p.y][p.x] == 1){
                         if(!closeList.contains(p)){
@@ -95,28 +110,36 @@ public abstract class LevelLines {
             return false;
         }
     }
-    
-    public static ArrayList<Point> surroundings(Point p, boolean diag, int N, Point[][] pointMap){
+
+    /**
+     * Returns a list of the surrounding tiles
+     * @param p the start tile
+     * @param diag a boolean enabling diagonal search
+     * @param pointMap  the point map
+     * @return a list of neighbouring points
+     */
+    public static ArrayList<Point> surroundings(Point p, boolean diag, Point[][] pointMap){
         ArrayList<Point> result = new ArrayList<Point>();
         int x = p.x;
         int y = p.y;
-        int bound = N-1;
+        int boundY = pointMap.length-1;
+        int boundX = pointMap[0].length-1;
         
         if(x>0){
             if(y > 0 && diag){
                 result.add(pointMap[y-1][x-1]);
             }
             result.add(pointMap[y][x-1]);
-            if(y < bound && diag){
+            if(y < boundY && diag){
                 result.add(pointMap[y+1][x-1]);
             }
         }
-        if(x<bound){
+        if(x<boundX){
             if(y > 0 && diag){
                 result.add(pointMap[y-1][x+1]);
             }
             result.add(pointMap[y][x+1]);
-            if(y < bound && diag){
+            if(y < boundY && diag){
                 result.add(pointMap[y+1][x+1]);
             }
         }
@@ -124,7 +147,7 @@ public abstract class LevelLines {
         if(y > 0){
             result.add(pointMap[y-1][x]);
         }
-        if(y < bound){
+        if(y < boundY){
             result.add(pointMap[y+1][x]);
         }
         

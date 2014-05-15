@@ -29,10 +29,10 @@ public class Nappe extends MeshObject {
 	// Constructeur
 	public Nappe()
 	{
-		verticesNumber = 5;
-        setVerts(5);
-        setIndices(5);	
-        setCouleur(5);	
+		verticesNumber = 10;
+        setVerts(10);
+        setIndices(10);	
+        setCouleur(10);	
 	}
 	
 	public Nappe(int definition)
@@ -49,7 +49,7 @@ public class Nappe extends MeshObject {
 		// nombre de coordonnées : 3 coord par points.
 		int nbCoord = taille*taille*3;
 		// pas, calculé à partir de la résolution demandée (taille du côté en nbr de points)
-		float pas = (float)10/(float)taille;
+		float pas = (float)20/(float)taille;
 		//Log.w(POINTS, "Test du pas : "+(float)pas);
 		// décalage si la taille est paire.
 		float offset = 0f;

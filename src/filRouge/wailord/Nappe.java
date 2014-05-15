@@ -138,12 +138,13 @@ public class Nappe extends MeshObject {
 			stripes.add(stripe);
 		}
 		
+		mIndBuff = new ArrayList<Buffer>();
+		
 		Log.v(INDICES, "Génération des indices OK.");
-		Buffer b;
 		for(int i = 0; i < stripes.size(); i++)
 		{
-			b = fillBuffer(stripes.get(i)); 
-			mIndBuff.add(b);
+			Log.v(INDICES, "Stripe "+i+ " : "+(stripes.get(i))[1]);
+			mIndBuff.add(fillBuffer(stripes.get(i)));
 		}	
 	}
 	

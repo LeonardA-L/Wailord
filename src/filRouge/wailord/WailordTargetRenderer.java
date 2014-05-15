@@ -5,9 +5,9 @@
 
 package filRouge.wailord;
 
-import java.util.ArrayList;
-import java.util.Vector;
 import java.nio.Buffer;
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -22,7 +22,6 @@ import com.qualcomm.vuforia.Renderer;
 import com.qualcomm.vuforia.State;
 import com.qualcomm.vuforia.Tool;
 import com.qualcomm.vuforia.TrackableResult;
-import com.qualcomm.vuforia.VIDEO_BACKGROUND_REFLECTION;
 import com.qualcomm.vuforia.Vuforia;
 
 
@@ -40,7 +39,7 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
     private int shaderProgramID;  
     // vertex Coordinates + RGB in the end
     private int vertexHandle;  
-    private static final String A_POSITION = "a_position";
+    private static final String A_POSITION = "a_Position";
  
     // colors ... 
     private  static final String A_COLOR = "a_Color";
@@ -152,7 +151,8 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
             
             GLES20.glUseProgram(shaderProgramID);
             
-            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,false, 0, mNappe.getVertices());
+            
+            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,false, 0, mNappe.getVertex());
             GLES20.glVertexAttribPointer(aColorLocation,3, GLES20.GL_FLOAT,false, 0, mNappe.getCouleur());
             
             
@@ -172,7 +172,7 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
             // GLES20.glUniform1i(texSampler2DHandle, 0);
             
             // actual drawing -> with TRIANGLES
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES,mTeapot.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,mTeapot.getIndices());
+            //GLES20.glDrawElements(GLES20.GL_TRIANGLES,mTeapot.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,mTeapot.getIndices());
             
             ArrayList<Buffer> stripeBuffer = new ArrayList<Buffer>();
             stripeBuffer = mNappe.getInd();

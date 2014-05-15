@@ -2,6 +2,8 @@ package filRouge.wailord;
 
 import java.util.ArrayList;
 
+import android.graphics.Point;
+
 public abstract class LevelLines {
     /**
      * Will detect level lines in the shapeMap (and the corresponding pointMap) and replace them with the corresponding height

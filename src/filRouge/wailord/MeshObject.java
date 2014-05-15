@@ -87,6 +87,20 @@ public abstract class MeshObject
     }
     
     
+    protected Buffer fillBuffer(byte[] array)
+    {
+        // Each short takes 2 bytes
+        ByteBuffer bb = ByteBuffer.allocateDirect(1 * array.length);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        for (byte s : array)
+            bb.put(s);
+        bb.rewind();
+        
+        return bb;
+        
+    }
+    
+    
     public abstract Buffer getBuffer(BUFFER_TYPE bufferType);
     
     

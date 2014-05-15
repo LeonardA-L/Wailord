@@ -731,11 +731,11 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         boolean translucent = Vuforia.requiresAlpha();
         
         mGlView = new WailordApplicationGLView(this);
-        mGlView.init(translucent, depthSize, stencilSize);
+        mGlView.init(translucent, depthSize, stencilSize);  // vue openGL transparente
         
         
-        mRenderer = new WailordTargetRenderer(this, this);
-        mRenderer.setTextures(mTextures);
+        mRenderer = new WailordTargetRenderer(this, this);  // renderer openGL
+     // mRenderer.setTextures(mTextures);
         mGlView.setRenderer(mRenderer);
         
         addOverlayView(true);
@@ -872,6 +872,8 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         mCameraButton.setVisibility(View.VISIBLE);
     }
     
+    
+ //  ### USELESS ###   
  // Creates a texture given the filename
     Texture createTexture(String nName)
     {
@@ -916,6 +918,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     {
         return mProjectionMatrix;
     }
+    
  // Method for setting / updating the projection matrix for AR content
     // rendering
     private void setProjectionMatrix()
@@ -927,6 +930,8 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     
  // We want to load specific textures from the APK, which we will later use
     // for rendering.
+    
+ // ### USELESS ###  
     private void loadTextures()
     {
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotBlue.png",
@@ -1191,7 +1196,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
                 int pixel = bmpOriginal.getPixel(x, y);
                 //int value = (int)(((float)Color.red(pixel))*0.2126 + ((float)Color.green(pixel))*0.7152 + ((float)Color.blue(pixel))*0.0722) ;
                 int value = (Color.red(pixel)*212 + Color.green(pixel)*715 + Color.blue(pixel)*722) ;
-                // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
+                // Gray = 0.2126ï¿½Red + 0.7152ï¿½Green + 0.0722ï¿½Blue
                 //get binary value
                 if(value < threshold){
                 	bmpBinary[y][x] = LEO_HIGH;

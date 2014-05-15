@@ -5,10 +5,12 @@
 
 package filRouge.wailord;
 
+import java.util.ArrayList;
 import java.util.Vector;
-
+import java.nio.Buffer;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -29,28 +31,35 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
 {
     private static final String LOGTAG = "UserDefinedTargetRenderer";
     
-    MainActivity vuforiaAppSession;
     
-    public boolean mIsActive = false;
+    MainActivity vuforiaAppSession;  
+    public boolean mIsActive = false;    
+//  private Vector<Texture> mTextures;  
     
-    private Vector<Texture> mTextures;
+    // shader program
+    private int shaderProgramID;  
+    // vertex Coordinates + RGB in the end
+    private int vertexHandle;  
+    private static final String A_POSITION = "a_position";
+ 
+    // colors ... 
+    private  static final String A_COLOR = "a_Color";
+    private static final int COLOR_COMPONENT_COUNT = 3;
+    private int aColorLocation;
     
-    private int shaderProgramID;
-    
-    private int vertexHandle;
-    
-    private int normalHandle;
-    
-    private int textureCoordHandle;
-    
+    // View matrix for orientation ?
     private int mvpMatrixHandle;
     
-    private int texSampler2DHandle;
+//  private int normalHandle;    
+//  private int textureCoordHandle;    
+
+//  private int texSampler2DHandle;
     
     // Constants:
     static final float kObjectScale = 3.f;
     
     private Teapot mTeapot;
+    private Nappe mNappe;
     
     // Reference to main activity
     private MainActivity mActivity;
@@ -119,11 +128,8 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
         Renderer.getInstance().drawVideoBackground();
         
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        GLES20.glEnable(GLES20.GL_CULL_FACE);
-        if (Renderer.getInstance().getVideoBackgroundConfig().getReflection() == VIDEO_BACKGROUND_REFLECTION.VIDEO_BACKGROUND_REFLECTION_ON)
-            GLES20.glFrontFace(GLES20.GL_CW); // Front camera
-        else
-            GLES20.glFrontFace(GLES20.GL_CCW); // Back camera
+        GLES20.glEnable(GLES20.GL_CULL_FACE);        
+        GLES20.glFrontFace(GLES20.GL_CCW); // pour utilisation avec la caméra arrière, sinon CW
             
         // Render the RefFree UI elements depending on the current state
         mActivity.refFreeFrame.render();
@@ -146,30 +152,40 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
             
             GLES20.glUseProgram(shaderProgramID);
             
-            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
-                false, 0, mTeapot.getVertices());
-            GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT,
-                false, 0, mTeapot.getNormals());
-            GLES20.glVertexAttribPointer(textureCoordHandle, 2,
-                GLES20.GL_FLOAT, false, 0, mTeapot.getTexCoords());
+            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,false, 0, mNappe.getVertices());
+            GLES20.glVertexAttribPointer(aColorLocation,3, GLES20.GL_FLOAT,false, 0, mNappe.getCouleur());
             
-            GLES20.glEnableVertexAttribArray(vertexHandle);
-            GLES20.glEnableVertexAttribArray(normalHandle);
-            GLES20.glEnableVertexAttribArray(textureCoordHandle);
             
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,
-                mTextures.get(0).mTextureID[0]);
+            //GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT,false, 0, mTeapot.getNormals());
+            //GLES20.glVertexAttribPointer(textureCoordHandle, 2,GLES20.GL_FLOAT, false, 0, mTeapot.getTexCoords());
+            
+            GLES20.glEnableVertexAttribArray(vertexHandle);  		// utiliser les points
+            GLES20.glEnableVertexAttribArray(aColorLocation);       // utiliser les couleurs
+            
+           // GLES20.glEnableVertexAttribArray(normalHandle);
+           // GLES20.glEnableVertexAttribArray(textureCoordHandle);
+            
+            //GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            //GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextures.get(0).mTextureID[0]);
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false,
                 modelViewProjection, 0);
-            GLES20.glUniform1i(texSampler2DHandle, 0);
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES,
-                mTeapot.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,
-                mTeapot.getIndices());
+            // GLES20.glUniform1i(texSampler2DHandle, 0);
+            
+            // actual drawing -> with TRIANGLES
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES,mTeapot.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,mTeapot.getIndices());
+            
+            ArrayList<Buffer> stripeBuffer = new ArrayList<Buffer>();
+            stripeBuffer = mNappe.getInd();
+            for(int i = 0; i < stripeBuffer.size() ; i++)
+    		{
+    			GLES20.glDrawElements(GL11.GL_TRIANGLE_STRIP, mNappe.getNumObjectIndex(), GL11.GL_UNSIGNED_BYTE, stripeBuffer.get(i));
+    		}
+            
             
             GLES20.glDisableVertexAttribArray(vertexHandle);
-            GLES20.glDisableVertexAttribArray(normalHandle);
-            GLES20.glDisableVertexAttribArray(textureCoordHandle);
+            GLES20.glDisableVertexAttribArray(aColorLocation);
+            //GLES20.glDisableVertexAttribArray(normalHandle);
+            //GLES20.glDisableVertexAttribArray(textureCoordHandle);
             
             SampleUtils.checkGLError("UserDefinedTargets renderFrame");
         }
@@ -184,12 +200,15 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
     {
         Log.d(LOGTAG, "initRendering");
         
-        mTeapot = new Teapot();
+        //mTeapot = new Teapot();
+        
+        mNappe = new Nappe();
         
         // Define clear color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f
             : 1.0f);
-        
+     
+        /*
         // Now generate the OpenGL texture objects and add settings
         for (Texture t : mTextures)
         {
@@ -203,28 +222,34 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
                 t.mWidth, t.mHeight, 0, GLES20.GL_RGBA,
                 GLES20.GL_UNSIGNED_BYTE, t.mData);
         }
+        */
         
         shaderProgramID = SampleUtils.createProgramFromShaderSrc(
-            CubeShaders.CUBE_MESH_VERTEX_SHADER,
-            CubeShaders.CUBE_MESH_FRAGMENT_SHADER);
+            CubeShaders.WAILORD_MESH_VERTEX_SHADER,
+            CubeShaders.WAILORD_MESH_FRAGMENT_SHADER);
         
-        vertexHandle = GLES20.glGetAttribLocation(shaderProgramID,
-            "vertexPosition");
-        normalHandle = GLES20.glGetAttribLocation(shaderProgramID,
+        vertexHandle = GLES20.glGetAttribLocation(shaderProgramID, A_POSITION);
+        mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgramID,
+                "modelViewProjectionMatrix");
+        aColorLocation = GLES20.glGetAttribLocation(shaderProgramID, A_COLOR);
+        
+        
+        
+       /* normalHandle = GLES20.glGetAttribLocation(shaderProgramID,
             "vertexNormal");
         textureCoordHandle = GLES20.glGetAttribLocation(shaderProgramID,
             "vertexTexCoord");
         mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgramID,
             "modelViewProjectionMatrix");
         texSampler2DHandle = GLES20.glGetUniformLocation(shaderProgramID,
-            "texSampler2D");
+            "texSampler2D"); */
     }
     
-    
+    /*
     public void setTextures(Vector<Texture> textures)
     {
         mTextures = textures;
         
     }
-    
+    */
 }

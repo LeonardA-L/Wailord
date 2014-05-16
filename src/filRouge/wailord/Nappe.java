@@ -15,29 +15,26 @@ public class Nappe extends MeshObject {
 	// constante utilisée pour les couleurs
 	final byte MAXCOLOR = (byte)255;
 		
-	
+	private float[] nappeVertices;
 	private Buffer mVertBuff;
     private ArrayList<Buffer> mIndBuff;
     
     private Buffer mColorBuff;
     
     private int indicesNumber = 0;
-    private int verticesNumber = 0;
-    
+   
  	
 	
 	// Constructeur
 	public Nappe()
 	{
-		verticesNumber = 10;
-        setVerts(10);
-        setIndices(10);	
-        setCouleur(10);	
+        setVerts(30);
+        setIndices(30);	
+        setCouleur(30);	
 	}
 	
 	public Nappe(int definition)
 	{
-		verticesNumber = definition;
 		setVerts(definition);
 		setIndices(definition);
     	setCouleur(definition);
@@ -72,7 +69,7 @@ public class Nappe extends MeshObject {
 		
 		Log.v(POINTS,"Début de la génération des points." );
 		
-		float[] nappeVertices = new float[nbCoord];
+		nappeVertices = new float[nbCoord];
 		
 		int ligne = 0;
 		// incrément de 3 pour avancer à chaque fois au point suivant.
@@ -114,8 +111,7 @@ public class Nappe extends MeshObject {
 		// remplissage de chaque bande de triangles.
 		for(int i = 0; i< nbStripe; i++)
 		{
-			Log.d(INDICES, "# BANDE N° : "+i);
-			
+			Log.d(INDICES, "# BANDE N° : "+i);	
 			short[] stripe = new short[indicesNumber];
 			for(int j = 0; j <= stripe.length-6; j+=6)
 			{
@@ -148,7 +144,6 @@ public class Nappe extends MeshObject {
 		}	
 	}
 	
-	
 	public ArrayList<Buffer> getInd()
 	{
 		return mIndBuff;
@@ -158,26 +153,45 @@ public class Nappe extends MeshObject {
 	public void setCouleur(int taille)
 	{
 		Log.v(COULEURS, "Début de la génération des couleurs");
-		byte[] couleurs = new byte[taille*taille*4];		
-		for(int i = 0; i < (taille*taille*4)-4; i+=4)
+		int nbCouleurs = taille*taille*4;
+		byte[] couleurs = new byte[nbCouleurs];	
+		int indicePoints = 2;
+		for(int i = 0; i< nbCouleurs; i+=4)
 		{
-			if( (i < (taille*taille*4)/2) )
+			if( (float)nappeVertices[indicePoints] == 0f)
 			{
 				couleurs[i] = 0;			// RED
 				couleurs[i+1] = MAXCOLOR;	// BLUE
 				couleurs[i+2] = 0;			// GREEN
 				couleurs[i+3] = MAXCOLOR;   // ALPHA
 			}
+			else if ( (float)nappeVertices[indicePoints] > 0f)
+			{
+				couleurs[i] = MAXCOLOR;		// RED
+				couleurs[i+1] = 0;			// BLUE
+				couleurs[i+2] = 0;			// GREEN
+				couleurs[i+3] = MAXCOLOR;   // ALPHA
+			}
 			else
 			{
-				couleurs[i] = 0;
-				couleurs[i+1] = 0;
-				couleurs[i+2] = MAXCOLOR;
-				couleurs[i+3] = MAXCOLOR;
+				couleurs[i] = 0;			// RED
+				couleurs[i+1] = 0;			// BLUE
+				couleurs[i+2] = MAXCOLOR;	// GREEN
+				couleurs[i+3] = MAXCOLOR;   // ALPHA
 			}
+			indicePoints+=3;
+		}
+		
+		/*
+		for(int i = 0; i < (nbCouleurs)-4; i+=4)
+		{
+				couleurs[i] = 0;			// RED
+				couleurs[i+1] = MAXCOLOR;	// BLUE
+				couleurs[i+2] = 0;			// GREEN
+				couleurs[i+3] = MAXCOLOR;   // ALPHA
 			Log.v(COULEURS,"Couleur du point "+i+" : ");
 			Log.v(COULEURS,"R :"+couleurs[i]+", G :"+couleurs[i+1]+", B :"+couleurs[i+2]+" || Alpha :"+couleurs[i+3]);
-		}
+		}*/
 		mColorBuff = fillBuffer(couleurs);
 	}
 	
@@ -185,7 +199,6 @@ public class Nappe extends MeshObject {
 	{
 		return mColorBuff;
 	}
-	
 	
 	@Override
 	public int getNumObjectVertex() {

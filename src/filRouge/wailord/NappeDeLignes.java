@@ -1,4 +1,4 @@
-package com.wailord.cubegl;
+package filRouge.wailord;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,14 +16,14 @@ public class NappeDeLignes {
 	final String INDICES = "INDICES";
 	final String COULEURS = "COULEURS";
 	
-	// constante utilisée pour les couleurs
+	// constante utilis��e pour les couleurs
 	final byte MAXCOLOR = (byte)255;
 	
-	// buffer définissant les points de la nappe
-	private float[] nappeVertices; // coordonnées
-	private FloatBuffer mFNappeVerticesBuffer; // coordonnées dans le buffer
+	// buffer definissant les points de la nappe
+	private float[] nappeVertices; // coordonn��es
+	private FloatBuffer mFNappeVerticesBuffer; // coordonn��es dans le buffer
 	
-	// buffer définissant les indices
+	// buffer definissant les indices
 	private byte[] nappeIndices;
 	private ByteBuffer mFNappeIndices;
 	private int nbPoints;
@@ -43,13 +43,13 @@ public class NappeDeLignes {
 	}
 	
 	
-	// Initialisation des coordonnées des points de la nappe
+	// Initialisation des coordonn��es des points de la nappe
 	private void initNappe()
 	{
 		
-		Log.v(POINTS,"Début de la génération des points." );
-		// on suppose que l'on reçoit un tableau qui contient des coordonnées de la forme
-		// tab[x][y] = z dans un repère conventionnel opengl :
+		Log.v(POINTS,"D��but de la g��n��ration des points." );
+		// on suppose que l'on re��oit un tableau qui contient des coordonn��es de la forme
+		// tab[x][y] = z dans un rep��re conventionnel opengl :
 		// # x vers la droite,
 		// # y vers le haut
 		// # z vers l'utilisateur
@@ -75,20 +75,20 @@ public class NappeDeLignes {
 	
 		nbPoints = map.length;
 		Log.v(POINTS, "nbPoints = "+nbPoints);
-		// taille représente le côté de la nappe
+		// taille repr��sente le c��t�� de la nappe
 		int taille =  (int) Math.sqrt(map.length); 
 		Log.v(POINTS, "taille = "+taille);
 		
-		// A partir de ce tableau, on va faire un tableau de points à trois coordonnées
-		// on ajoutera un plan de points à z = 0 pour pouvoir tracer des lignes selon l'axe z
+		// A partir de ce tableau, on va faire un tableau de points �� trois coordonn��es
+		// on ajoutera un plan de points �� z = 0 pour pouvoir tracer des lignes selon l'axe z
 		
-		// nombre de coordonnées dans le tableau : 3 coord par points.
+		// nombre de coordonn��es dans le tableau : 3 coord par points.
 		int nbCoord = nbPoints*3;
-		// pas : on veut un recatangle de 1 unité de côté
+		// pas : on veut un recatangle de 1 unit�� de c��t��
 		float pas = (float)1/(float)taille;
 		
 		// Calcul de l'offset et d'un max 
-		// utilisés pour la génération d'un vecteur d'abscisses/ordonnées
+		// utilis��s pour la g��n��ration d'un vecteur d'abscisses/ordonn��es
 		float offset = 0f;
 		int max = (taille-1)/2;
 		if(taille%2 == 0) // si taille paire
@@ -97,35 +97,35 @@ public class NappeDeLignes {
 			offset = (float)1/((float)taille*(float)2);
 		}
 		
-		// tableau de coordonnées fixes pour une ligne ou une colonne.
+		// tableau de coordonn��es fixes pour une ligne ou une colonne.
 		float[] coord1 = new float[taille];
 		for(float i = -max; i <= max; i++)
 		{
 			// Log.v(POINTS,"Valeur de i+max : "+(i+max) );
 			coord1[(int)i+max] = (float)i*(float)pas-(float)((float)Math.abs(max)/(float)max)*(float)offset;
-			// Log.v(POINTS,"Coordonnée associée :"+(float)coord1[(int)i+max] );
+			// Log.v(POINTS,"Coordonn��e associ��e :"+(float)coord1[(int)i+max] );
 		}
 		
 		// tableau de points : 
-		nappeVertices = new float[nbCoord*2]; // x2 pour les points à 0
+		nappeVertices = new float[nbCoord*2]; // x2 pour les points �� 0
 		
 		int ligne = 0;
-		// incrément de 3 pour avancer à chaque fois au point suivant.
+		// incr��ment de 3 pour avancer �� chaque fois au point suivant.
 		for(int i = 0; i < nbPoints*2*3; i+=6)
 		{	
 			Log.d(POINTS,"# i ="+i);
-			// Incrément des lignes.
+			// Incr��ment des lignes.
 			if( (i/6)%taille == 0 && i != 0)
 			{
 				ligne++;
 				Log.d(POINTS,"___LIGNE = "+ligne );
 			}
 			
-			// point à z = 0
+			// point �� z = 0
 			nappeVertices[i] = (float)coord1[(i/3)%taille];
 			nappeVertices[i+1] = (float)-coord1[ligne];
 			nappeVertices[i+2] = 0f;
-			// point à z = map[i/6]
+			// point �� z = map[i/6]
 			nappeVertices[i+3] = (float)coord1[(i/3)%taille];
 			nappeVertices[i+4] = (float)-coord1[ligne];
 			nappeVertices[i+5] = map[i/6];
@@ -150,7 +150,7 @@ public class NappeDeLignes {
 	// Initialisation des indices des bandes de triangle.
 	private void initIndices()
 	{
-		Log.v(INDICES,"Début de la génération des indices." );
+		Log.v(INDICES,"D��but de la g��n��ration des indices." );
 		nappeIndices = new byte[nbPoints*2];
 		Log.v(INDICES,"Avant la boucle" );
 		for(int i = 0; i < nbPoints*2; i++)
@@ -167,7 +167,7 @@ public class NappeDeLignes {
 	public void initCouleur()
 	{
 		int taille = nbPoints;
-		Log.v(COULEURS, "Début de la génération des couleurs");
+		Log.v(COULEURS, "D��but de la g��n��ration des couleurs");
 		byte[] couleurs = new byte[taille*taille*4];		
 		for(int i = 0; i < (taille*taille*4)-4; i+=4)
 		{
@@ -182,7 +182,7 @@ public class NappeDeLignes {
 		mColorBuffer.position(0);	
 	}
 	
-	// utilitaire pour la génération des couleurs.
+	// utilitaire pour la g��n��ration des couleurs.
 	public byte couleurAleatoire()
 	{
 		byte a= (byte) Math.ceil((Math.random()*10));		

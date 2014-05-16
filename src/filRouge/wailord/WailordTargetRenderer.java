@@ -36,13 +36,12 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
     
     // shader program
     private int shaderProgramID;  
-    // vertex Coordinates + RGB in the end
+    // vertex Coordinates
     private int vertexHandle;  
     private static final String A_POSITION = "a_Position";
  
-    // colors ... 
+    // colors
     private  static final String A_COLOR = "a_Color";
-    private static final int COLOR_COMPONENT_COUNT = 3;
     private int aColorLocation;
     
     // View matrix for orientation ?
@@ -50,9 +49,10 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
        
     // Constants:
     static final float kObjectScale = 3.f;
-    
-    private Teapot mTeapot;
-    private Nappe mNappe;
+
+    private Nappe mNappe1;
+    private Nappe mNappe2;
+    private Nappe mNappe3;
     
     // Reference to main activity
     private MainActivity mActivity;
@@ -138,15 +138,17 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
             
             float[] modelViewProjection = new float[16];
             Matrix.translateM(modelViewMatrix, 0, 0.0f, 0.0f, kObjectScale);
-            Matrix.scaleM(modelViewMatrix, 0, kObjectScale, kObjectScale,
-                kObjectScale);
+            Matrix.scaleM(modelViewMatrix, 0, kObjectScale, kObjectScale, kObjectScale);
+            //Matrix.scaleM(modelViewProjection, 0, 5, 5, 5);
             Matrix.multiplyMM(modelViewProjection, 0, vuforiaAppSession
                 .getProjectionMatrix().getData(), 0, modelViewMatrix, 0);
             
             GLES20.glUseProgram(shaderProgramID);
             
-            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 0, mNappe.getVertex());
-            GLES20.glVertexAttribPointer(aColorLocation,4, GLES20.GL_UNSIGNED_BYTE, false, 0, mNappe.getCouleur());
+            // --------------------------------------------------------------
+            
+            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 0, mNappe1.getVertex());
+            GLES20.glVertexAttribPointer(aColorLocation,4, GLES20.GL_UNSIGNED_BYTE, false, 0, mNappe1.getCouleur());
             
             GLES20.glEnableVertexAttribArray(vertexHandle);  		// utiliser les points
             GLES20.glEnableVertexAttribArray(aColorLocation);       // utiliser les couleurs
@@ -154,14 +156,40 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, modelViewProjection, 0);
             
             ArrayList<Buffer> stripeBuffer = new ArrayList<Buffer>();
-            stripeBuffer = mNappe.getInd();
+            stripeBuffer = mNappe1.getInd();
             for(int i = 0; i < stripeBuffer.size() ; i++)
     		{
-    			GLES20.glDrawElements(GL11.GL_TRIANGLE_STRIP, mNappe.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer.get(i));
+    			GLES20.glDrawElements(GL11.GL_TRIANGLE_STRIP, mNappe1.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer.get(i));
+    		}
+            
+            // -------------------------------------------------------------------
+            
+            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 0, mNappe2.getVertex());
+            GLES20.glVertexAttribPointer(aColorLocation,4, GLES20.GL_UNSIGNED_BYTE, false, 0, mNappe2.getCouleur());
+        
+            ArrayList<Buffer> stripeBuffer2 = new ArrayList<Buffer>();
+            stripeBuffer = mNappe2.getInd();
+            for(int i = 0; i < stripeBuffer2.size() ; i++)
+    		{
+    			GLES20.glDrawElements(GL11.GL_TRIANGLE_STRIP, mNappe2.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer2.get(i));
     		}
                         
+            //---------------------------
+            
+            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 0, mNappe3.getVertex());
+            GLES20.glVertexAttribPointer(aColorLocation,4, GLES20.GL_UNSIGNED_BYTE, false, 0, mNappe3.getCouleur());
+            
+            ArrayList<Buffer> stripeBuffer3 = new ArrayList<Buffer>();
+            stripeBuffer = mNappe3.getInd();
+            for(int i = 0; i < stripeBuffer3.size() ; i++)
+    		{
+    			GLES20.glDrawElements(GL11.GL_TRIANGLE_STRIP, mNappe3.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer3.get(i));
+    		}
+                 
+            // ---------------------------
             GLES20.glDisableVertexAttribArray(vertexHandle);
             GLES20.glDisableVertexAttribArray(aColorLocation);
+            
            
             SampleUtils.checkGLError("UserDefinedTargets renderFrame");
         }
@@ -177,8 +205,9 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
         Log.d(LOGTAG, "initRendering");
        
         // notre objet
-        mNappe = new Nappe();
-        
+        mNappe1 = new Nappe(100,2);
+        mNappe2 = new Nappe(100,5);
+        mNappe3 = new Nappe(100,8);
         // Define clear color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
         

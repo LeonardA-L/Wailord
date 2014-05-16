@@ -28,25 +28,25 @@ public class Nappe extends MeshObject {
 	// Constructeur
 	public Nappe()
 	{
-        setVerts(30);
-        setIndices(30);	
-        setCouleur(30);	
+        setVerts(100,3);
+        setIndices(100);	
+        setCouleur(100);	
 	}
 	
-	public Nappe(int definition)
+	public Nappe(int definition,int hauteur)
 	{
-		setVerts(definition);
+		setVerts(definition, hauteur);
 		setIndices(definition);
     	setCouleur(definition);
 	}
 
 
-	private void setVerts(int taille) 
+	private void setVerts(int taille, int hauteur) 
 	{	
 		// nombre de coordonnées : 3 coord par points.
 		int nbCoord = taille*taille*3;
 		// pas, calculé à partir de la résolution demandée (taille du côté en nbr de points)
-		float pas = (float)20/(float)taille;
+		float pas = (float)40/(float)taille;
 		//Log.w(POINTS, "Test du pas : "+(float)pas);
 		// décalage si la taille est paire.
 		float offset = 0f;
@@ -84,7 +84,7 @@ public class Nappe extends MeshObject {
 			
 			nappeVertices[i] = (float) coord1[(i/3)%taille];
 			nappeVertices[i+1] = (float) -coord1[ligne];
-			nappeVertices[i+2] = (float) -coord1[(i/3)%taille]*coord1[(i/3)%taille]-coord1[ligne]*coord1[ligne];
+			nappeVertices[i+2] = (float) hauteur; //-coord1[(i/3)%taille]*coord1[(i/3)%taille]-coord1[ligne]*coord1[ligne];
 			Log.d(POINTS,"Nouveau point : " );
 			Log.d(POINTS,"x = "+(float)nappeVertices[i]+"; y = "+(float)nappeVertices[i+1]+"; z = "+
 					(float)nappeVertices[i+2]);
@@ -156,25 +156,25 @@ public class Nappe extends MeshObject {
 		int nbCouleurs = taille*taille*4;
 		byte[] couleurs = new byte[nbCouleurs];	
 		int indicePoints = 2;
-		for(int i = 0; i< nbCouleurs; i+=4)
+		for(int i = 0; i < nbCouleurs; i+=4)
 		{
 			if( (float)nappeVertices[indicePoints] == 0f)
 			{
-				couleurs[i] = 0;			// RED
+				couleurs[i]   = 0;			// RED
 				couleurs[i+1] = MAXCOLOR;	// BLUE
 				couleurs[i+2] = 0;			// GREEN
 				couleurs[i+3] = MAXCOLOR;   // ALPHA
 			}
 			else if ( (float)nappeVertices[indicePoints] > 0f)
 			{
-				couleurs[i] = MAXCOLOR;		// RED
+				couleurs[i]   = MAXCOLOR;   // RED
 				couleurs[i+1] = 0;			// BLUE
 				couleurs[i+2] = 0;			// GREEN
 				couleurs[i+3] = MAXCOLOR;   // ALPHA
 			}
 			else
 			{
-				couleurs[i] = 0;			// RED
+				couleurs[i]   = 0;			// RED
 				couleurs[i+1] = 0;			// BLUE
 				couleurs[i+2] = MAXCOLOR;	// GREEN
 				couleurs[i+3] = MAXCOLOR;   // ALPHA

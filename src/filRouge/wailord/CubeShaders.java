@@ -41,7 +41,7 @@ public class CubeShaders
             + "} \n";
         
         public static final String WAILORD_MESH_FRAGMENT_SHADER = " \n" + "\n"
-            + "precision mediump float; \n" + " \n" + "varying vec2 texCoord; \n"
+            + "precision mediump float; \n" + " \n"
             + "varying vec4 v_Color; \n" + " \n"  // u_color used to be called normal 
             + " \n" + "void main() \n"
             + "{ \n" + "   gl_FragColor = v_Color; \n"

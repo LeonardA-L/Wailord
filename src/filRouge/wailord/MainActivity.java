@@ -1183,7 +1183,11 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     }
     
 
-    public int[][] toBinary(Bitmap bmpOriginal) {
+    public int[][] getmProcessedImage() {
+		return mProcessedImage;
+	}
+
+	public int[][] toBinary(Bitmap bmpOriginal) {
         int width, height, threshold;
         height = bmpOriginal.getHeight();
         width = CAMERA_WIDTH;

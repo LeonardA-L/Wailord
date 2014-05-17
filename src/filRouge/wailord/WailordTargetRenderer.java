@@ -7,6 +7,7 @@ package filRouge.wailord;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -158,19 +159,19 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
             GLES20.glEnableVertexAttribArray(aColorLocation);       // utiliser les couleurs
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, modelViewProjection, 0); // matrice de projection
             
-           
+           /*
             ArrayList<Buffer> stripeBuffer = new ArrayList<Buffer>();
             stripeBuffer = mNappe1.getInd();
-            for(int i = 0; i < stripeBuffer.size() ; i++)
+            for(int i = 0; i < stripeBuffer.size(); i++)
     		{
-    			GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, mNappe1.getNumObjectIndex(), 
+    			GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNappe1.getNumObjectIndex(), 
     					GL11.GL_UNSIGNED_SHORT, stripeBuffer.get(i));
     		}
-    		
-            /*
-            ShortBuffer indices = mNappe1.getInd();
-            GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, mNappe1.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT, indices);
-			*/
+    		*/
+            
+            Buffer indices = mNappe1.getInd2();
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNappe1.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT, indices);
+		
             // ---------------------------
             GLES20.glDisableVertexAttribArray(vertexHandle);
             GLES20.glDisableVertexAttribArray(aColorLocation);
@@ -186,7 +187,7 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
         Log.d(LOGTAG, "initRendering");
        
         // notre/nos objets
-        mNappe1 = new Nappe(100,2f);
+        mNappe1 = new Nappe(101,2f, vuforiaAppSession.getmProcessedImage());
         // Define clear color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
         

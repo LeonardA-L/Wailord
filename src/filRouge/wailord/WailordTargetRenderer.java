@@ -159,33 +159,10 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
             stripeBuffer = mNappe1.getInd();
             for(int i = 0; i < stripeBuffer.size() ; i++)
     		{
-    			GLES20.glDrawElements(GL11.GL_TRIANGLE_STRIP, mNappe1.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer.get(i));
+    			GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, mNappe1.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer.get(i));
     		}
             
-            // -------------------------------------------------------------------
-            
-            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 0, mNappe2.getVertex());
-            GLES20.glVertexAttribPointer(aColorLocation,4, GLES20.GL_UNSIGNED_BYTE, false, 0, mNappe2.getCouleur());
-        
-            ArrayList<Buffer> stripeBuffer2 = new ArrayList<Buffer>();
-            stripeBuffer = mNappe2.getInd();
-            for(int i = 0; i < stripeBuffer2.size() ; i++)
-    		{
-    			GLES20.glDrawElements(GL11.GL_TRIANGLE_STRIP, mNappe2.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer2.get(i));
-    		}
-                        
-            //---------------------------
-            
-            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 0, mNappe3.getVertex());
-            GLES20.glVertexAttribPointer(aColorLocation,4, GLES20.GL_UNSIGNED_BYTE, false, 0, mNappe3.getCouleur());
-            
-            ArrayList<Buffer> stripeBuffer3 = new ArrayList<Buffer>();
-            stripeBuffer = mNappe3.getInd();
-            for(int i = 0; i < stripeBuffer3.size() ; i++)
-    		{
-    			GLES20.glDrawElements(GL11.GL_TRIANGLE_STRIP, mNappe3.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer3.get(i));
-    		}
-                 
+       
             // ---------------------------
             GLES20.glDisableVertexAttribArray(vertexHandle);
             GLES20.glDisableVertexAttribArray(aColorLocation);
@@ -204,10 +181,8 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
     {
         Log.d(LOGTAG, "initRendering");
        
-        // notre objet
-        mNappe1 = new Nappe(100,2);
-        mNappe2 = new Nappe(100,5);
-        mNappe3 = new Nappe(100,8);
+        // notre/nos objets
+        mNappe1 = new Nappe(100,2f);
         // Define clear color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
         

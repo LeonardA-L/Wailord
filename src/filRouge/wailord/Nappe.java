@@ -28,12 +28,12 @@ public class Nappe extends MeshObject {
 	// Constructeur
 	public Nappe()
 	{
-        setVerts(100,3);
+        setVerts(100,3f);
         setIndices(100);	
         setCouleur(100);	
 	}
 	
-	public Nappe(int definition,int hauteur)
+	public Nappe(int definition, float hauteur)
 	{
 		setVerts(definition, hauteur);
 		setIndices(definition);
@@ -41,7 +41,7 @@ public class Nappe extends MeshObject {
 	}
 
 
-	private void setVerts(int taille, int hauteur) 
+	private void setVerts(int taille, float hauteur) 
 	{	
 		// nombre de coordonnées : 3 coord par points.
 		int nbCoord = taille*taille*3;
@@ -84,7 +84,8 @@ public class Nappe extends MeshObject {
 			
 			nappeVertices[i] = (float) coord1[(i/3)%taille];
 			nappeVertices[i+1] = (float) -coord1[ligne];
-			nappeVertices[i+2] = (float) hauteur; //-coord1[(i/3)%taille]*coord1[(i/3)%taille]-coord1[ligne]*coord1[ligne];
+			//nappeVertices[i+2] = (float) hauteur; //-coord1[(i/3)%taille]*coord1[(i/3)%taille]-coord1[ligne]*coord1[ligne];
+			nappeVertices[i+2] = (float)(Math.random()*3); 
 			Log.d(POINTS,"Nouveau point : " );
 			Log.d(POINTS,"x = "+(float)nappeVertices[i]+"; y = "+(float)nappeVertices[i+1]+"; z = "+
 					(float)nappeVertices[i+2]);

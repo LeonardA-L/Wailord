@@ -4,6 +4,7 @@ package filRouge.wailord;
 import java.util.Vector;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -26,8 +27,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.qualcomm.vuforia.CameraCalibration;
@@ -49,9 +52,16 @@ import com.qualcomm.vuforia.VideoMode;
 import com.qualcomm.vuforia.Vuforia;
 import com.qualcomm.vuforia.Vuforia.UpdateCallbackInterface;
 
+import android.view.View.OnClickListener;
+
 public class MainActivity extends Activity implements UpdateCallbackInterface, AppControl {
 
 	private static final String LOGTAG = "leMain";
+	
+	// Settings (changed in the setting activity)
+	public static int LightTreshold = 127;
+	public static int SmoothingIterations = 4;
+	
     private GestureDetector mGestureDetector;
     private Activity m_activity;
     // Vuforia initialization flags:
@@ -124,6 +134,12 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     long start;
     long end;
     
+    // Layout
+    Button btn_launch;
+    Button btn_settings;
+    
+    
+    
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
     	Log.d(LOGTAG, "onCreate");
@@ -132,7 +148,22 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         
         m_activity = this;
         
-        initAR(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        btn_launch = (Button)findViewById(R.id.btn_launch);
+        btn_launch.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				launchApp();
+			}
+		});
+        
+        btn_settings = (Button)findViewById(R.id.btn_settings);
+        btn_settings.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Intent secondeActivite = new Intent(MainActivity.this, SettingsActivity.class);
+			        startActivity(secondeActivite);
+			}
+		});
         
         // Load any sample specific textures:
         mTextures = new Vector<Texture>();
@@ -145,6 +176,10 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                 "droid");
     }
+	
+	public void launchApp(){
+		initAR(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+	}
 	
 	// camera picture retrieving
     private PictureCallback mPicture = new PictureCallback() {
@@ -719,8 +754,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
 
 	private void initApplicationAR() {
 		 Log.d(LOGTAG, "initApplicationAR");
-		TextView hellotext = (TextView)findViewById(R.id.helloTxt);
-    	hellotext.setText("IAAR");
+		
     	
     	// Do application initialization
         
@@ -1195,7 +1229,8 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         int width, height, threshold;
         height = bmpOriginal.getHeight();
         width = CAMERA_WIDTH;
-        threshold = 127000;
+        threshold = LightTreshold*1000;
+       Log.d(LOGTAG, "Treshold : "+threshold);
         int[][] bmpBinary = new int[height][width];
 
         for(int x = 0; x < width; ++x) {

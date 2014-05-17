@@ -17,4 +17,21 @@
         android:layout_marginTop="34dp"
         android:text="@string/hello_world" />
 
+    <Button
+        android:id="@+id/btn_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:text="Settingz" />
+
+    <Button
+        android:id="@+id/btn_launch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/helloTxt"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="126dp"
+        android:text="Launch It" />
+
 </RelativeLayout>

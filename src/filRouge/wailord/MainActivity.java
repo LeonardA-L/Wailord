@@ -1402,10 +1402,11 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
                 int pixel = bmpOriginal.getPixel(x, y);
                 //int value = (int)(((float)Color.red(pixel))*0.2126 + ((float)Color.green(pixel))*0.7152 + ((float)Color.blue(pixel))*0.0722) ;
                 int value = (Color.red(pixel)) ;
+               /*
                 if(value > 0){
                 	Log.d(LOGTAG,""+value);
-                }
-                bmpBinary[y][x] = value/1000;
+                }*/
+                bmpBinary[y][x] = (int)((10/255.0)*(value/1000.0));
             }
         }
         return bmpBinary;

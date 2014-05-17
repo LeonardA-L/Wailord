@@ -150,8 +150,8 @@ public class CameraActivity extends Activity {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
         	Log.d(TAG,"Picture taken");
-        	//Bitmap picture = BitmapFactory.decodeByteArray(data, 0, data.length);
-        	Bitmap picture= BitmapFactory.decodeResource(getResources(), R.drawable.ihem4);
+        	Bitmap picture = BitmapFactory.decodeByteArray(data, 0, data.length);
+        	//Bitmap picture= BitmapFactory.decodeResource(getResources(), R.drawable.ihem4);
         	
         	Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
         	Bitmap blankBMP = Bitmap.createBitmap(picture.getWidth(),picture.getHeight(),Bitmap.Config.ARGB_8888);

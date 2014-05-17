@@ -1,7 +1,16 @@
 package filRouge.wailord;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
+
+import org.opencv.android.Utils;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,6 +19,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
@@ -1204,11 +1214,156 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     public void processPicture(){
     	// Shows the loading dialog
     	//mPictureData = toBinary(mPictureData);
+    	
     	mProcessedImage = toBinary(mPictureData);
-    	//TODO: Leo : Do your thing, buddy !
     	
-    	//TODO: Julien : Do your thing, buddy !
     	
+    	// Find Contours via OpenCV
+    	Mat image = new Mat(mPictureData.getWidth(),mPictureData.getHeight(), CvType.CV_8UC4,new Scalar(4));
+    	Mat ITimage = new Mat(mPictureData.getWidth(),mPictureData.getHeight(), CvType.CV_8UC4,new Scalar(4));;
+    	Utils.bitmapToMat(mPictureData, image);
+
+    	Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
+
+    	List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+    	
+    	Imgproc.Canny(image, ITimage, 80, 100);
+    	Mat hierarchy = new Mat();
+    	Imgproc.findContours(ITimage, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+    	
+    	hierarchy.release();
+    	
+    	Imgproc.cvtColor(image, image, Imgproc.COLOR_GRAY2BGR);
+    		
+    	// Get a list of contour-related data
+    	int[][] v = contoursToLists(contours);
+    	// Sort the contour list according to the data
+    	contours = sort(contours, v);
+    	
+    	// Spreading threshold
+    	int currentDiag = -1;
+    	int tresh = 20;
+    	
+    	// Find who contains who (define level)
+    	int[] levelTab = levels(v, tresh);
+    	
+    	// Get max level
+    	int max = -1;
+    	for(int i=0;i<levelTab.length;i++){
+    		if(max == -1 || levelTab[i] > max){
+    			max = levelTab[i];
+    		}
+    	}
+    	
+    	// Draw the contours on the image
+    	for(int i=0;i<contours.size();i++){
+    		
+    		int fac = (int)((levelTab[i])*(255.0/(max))+1);
+    		if(currentDiag == -1 || Math.abs(v[i][1] - currentDiag) >= tresh){
+    			currentDiag = v[i][1];
+    			Imgproc.drawContours(image, contours, i, new Scalar(fac,fac,fac), 3); //#4 square (blue)
+    		}
+    		
+    	}
+    	
+    	// Get back to picture bitmap
+    	Utils.matToBitmap(image, mPictureData);
+    	//setImg(picture);
+    }
+    
+    public int[] levels(int[][] values, int tresh){
+    	int[] levels = new int[values.length];
+    	for(int i =0;i<values.length;i++){
+    		int level = 1;
+    		for(int j=0;j<i;j++){
+    			if(values[j][2] < values[i][2] && values[j][3] < values[i][3] && values[j][4] > values[i][4] && values[j][5] > values[i][5] && Math.abs(values[i][1] - values[j][1]) >= tresh){
+    				level ++;
+    			}
+    		}
+    		levels[i] = level;
+    	}
+    	return levels;
+    }
+    
+    public int[][] contoursToLists(List<MatOfPoint> contours){
+    	int[][] liste = new int[contours.size()][6];
+    	for(int i=0;i<contours.size();i++){
+    		List<org.opencv.core.Point> cont = contours.get(i).toList();
+    		Point min = new Point(-1,-1);
+    		Point max = new Point(-1,-1);
+    		for(int j=0;j<cont.size();j++){
+    			org.opencv.core.Point p = cont.get(j);
+    			if(min.x == -1 || p.x < min.x){
+    				min.x = (int)p.x;
+    			}
+    			if(min.y == -1 || p.y < min.y){
+    				min.y = (int)p.y;
+    			}
+    			
+    			if(max.x == -1 || p.x > max.x){
+    				max.x = (int)p.x;
+    			}
+    			if(max.y == -1 || p.y > max.y){
+    				max.y = (int)p.y;
+    			}
+    		}
+    		
+    		int diag = (int)Math.sqrt(Math.pow(max.x - min.x,2)+ Math.pow(max.y - min.y,2));
+    		//Log.d(TAG," "+i+" : "+diag);
+    		liste[i][0] = i;
+    		liste[i][1] = diag;
+    		liste[i][2] = min.x;
+    		liste[i][3] = min.y;
+    		liste[i][4] = max.x;
+    		liste[i][5] = max.y;
+    	}
+    	
+    	return liste;
+    }
+    
+    public List<MatOfPoint> sort(List<MatOfPoint> contours, int[][] values){
+    	List<MatOfPoint> sorted = new ArrayList<MatOfPoint>();
+    	boolean swapped = true;
+    	while(swapped){
+    		swapped = false;
+    		for(int i=0;i<values.length -1;i++){
+    			int[] tmp = new int[6];
+    			
+    			if(values[i+1][1] > values[i][1]){
+    				tmp[0] = values[i+1][0];
+    				tmp[1] = values[i+1][1];
+    				tmp[2] = values[i+1][2];
+    				tmp[3] = values[i+1][3];
+    				tmp[4] = values[i+1][4];
+    				tmp[5] = values[i+1][5];
+    				
+    				values[i+1][0] = values[i][0];
+    				values[i+1][1] = values[i][1];
+    				values[i+1][2] = values[i][2];
+    				values[i+1][3] = values[i][3];
+    				values[i+1][4] = values[i][4];
+    				values[i+1][5] = values[i][5];
+    				
+    				values[i][0] = tmp[0];
+    				values[i][1] = tmp[1];
+    				values[i][2] = tmp[2];
+    				values[i][3] = tmp[3];
+    				values[i][4] = tmp[4];
+    				values[i][5] = tmp[5];
+    				swapped = true;
+    			}
+    		}
+    	}
+    	
+    	int tres = 10;
+    	
+    	for(int i=0;i< values.length;i++){
+    		if(values[i][1] > tres){
+    			sorted.add(contours.get(values[i][0]));
+    		}
+    	}
+    	
+    	return sorted;
     }
     
 

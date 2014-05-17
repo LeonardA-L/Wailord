@@ -153,13 +153,21 @@ public class CameraActivity extends Activity {
         	//Bitmap picture = BitmapFactory.decodeByteArray(data, 0, data.length);
         	Bitmap picture= BitmapFactory.decodeResource(getResources(), R.drawable.ihem4);
         	
-        	
+        	Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        	Bitmap blankBMP = Bitmap.createBitmap(picture.getWidth(),picture.getHeight(),Bitmap.Config.ARGB_8888);
         	// Find Contours via OpenCV
         	Mat image = new Mat(picture.getWidth(),picture.getHeight(), CvType.CV_8UC4,new Scalar(4));
-        	Mat ITimage = new Mat(picture.getWidth(),picture.getHeight(), CvType.CV_8UC4,new Scalar(4));;
+        	Mat ITimage = new Mat(picture.getWidth(),picture.getHeight(), CvType.CV_8UC4,new Scalar(4));
+        	Mat newImg = new Mat(picture.getWidth(),picture.getHeight(), CvType.CV_8UC4,new Scalar(4));
+        	
         	Utils.bitmapToMat(picture, image);
+        	Utils.bitmapToMat(blankBMP, newImg);
 
+        	
         	Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
+        	Imgproc.cvtColor(newImg, newImg, Imgproc.COLOR_RGB2GRAY);
+        	
+        	newImg.setTo(new Scalar(0,0,0));
 
         	List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
         	
@@ -197,13 +205,13 @@ public class CameraActivity extends Activity {
         		int fac = (int)((levelTab[i])*(255.0/(max))+1);
         		if(currentDiag == -1 || Math.abs(v[i][1] - currentDiag) >= tresh){
         			currentDiag = v[i][1];
-        			Imgproc.drawContours(image, contours, i, new Scalar(fac,fac,fac), 3); //#4 square (blue)
+        			Imgproc.drawContours(newImg, contours, i, new Scalar(fac,fac,fac), 3); //#4 square (blue)
         		}
         		
         	}
         	
         	// Get back to picture bitmap
-        	Utils.matToBitmap(image, picture);
+        	Utils.matToBitmap(newImg, picture);
         	setImg(picture);
         
         }

@@ -155,4 +155,26 @@ public abstract class LevelLines {
         
         return result;
     }
+    
+    public static int[][] smoothOnce(int[][] tab, int[][] cpy) {
+        int[][] tab2 = new int[tab.length][tab[0].length];
+        for (int i = 1; i < (tab.length - 1); i++) {
+            for (int j = 1; j < (tab[0].length - 1); j++) {
+                if(cpy[i][j] == 0){
+                    tab2[i][j] = (tab[i + 1][j + 1] + tab[i - 1][j - 1] + tab[i + 1][j - 1] + tab[i - 1][j + 1]) / 4;
+                }
+                else{
+                    tab2[i][j] = cpy[i][j];
+                }
+            }
+        }
+        return tab2;
+    }
+    
+    public static int[][] smoothSeveral(int[][] tab, int[][] cpy, int n){
+        for(int i=0;i<n;i++){
+            tab = smoothOnce(tab, cpy);
+        }
+        return tab;
+    }
 }

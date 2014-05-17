@@ -9,6 +9,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
@@ -111,7 +112,10 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     Camera mTheCamera;
     private Bitmap mPictureData;
     private int[][] mProcessedImage;
-    public static final int CAMERA_WIDTH = 640;
+    private Point[][] pointMap;
+    public static final int HEIGHT = 10;
+    
+    public static final int CAMERA_WIDTH = 160;
     public static final int LEO_HIGH = 1;
     public static final int LEO_LOW = 0;
 
@@ -1171,14 +1175,23 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     	// Shows the loading dialog
     	//mPictureData = toBinary(mPictureData);
     	mProcessedImage = toBinary(mPictureData);
+    	pointMap = new Point[mProcessedImage.length][mProcessedImage[0].length];
+    	 for(int x = 0; x < mProcessedImage[0].length; ++x) {
+             for(int y = 0; y < mProcessedImage.length; ++y) {
+             	pointMap[y][x] = new Point(x,y);
+             }
+    	 }
+    	Log.d(LOGTAG,""+pointMap[2][3]);
     	//TODO: Leo : Do your thing, buddy !
+    	// Level Lines detection
+    	LevelLines.fillHeightsInMap(mProcessedImage, pointMap, HEIGHT);
     	
     	//TODO: Julien : Do your thing, buddy !
     	
     }
     
 
-    public int[][] toBinary(Bitmap bmpOriginal) {
+    public static int[][] toBinary(Bitmap bmpOriginal) {
         int width, height, threshold;
         height = bmpOriginal.getHeight();
         width = CAMERA_WIDTH;

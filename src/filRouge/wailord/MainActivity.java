@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -131,7 +134,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     Camera mTheCamera;
     private Bitmap mPictureData;
     private int[][] mProcessedImage;
-    public static final int CAMERA_WIDTH = 640;
+    public static final int CAMERA_WIDTH = 320;
     public static final int LEO_HIGH = 1;
     public static final int LEO_LOW = 0;
 
@@ -153,6 +156,12 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         setContentView(R.layout.activity_main);
         
         m_activity = this;
+        
+        Log.i(LOGTAG, "Trying to load OpenCV library");
+        if (!OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_2, this, mOpenCVCallBack))
+        {
+          Log.e(LOGTAG, "Cannot connect to OpenCV Manager");
+        }
         
         btn_launch = (Button)findViewById(R.id.btn_launch);
         btn_launch.setOnClickListener(new OnClickListener() {
@@ -1214,14 +1223,18 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     public void processPicture(){
     	// Shows the loading dialog
     	//mPictureData = toBinary(mPictureData);
-    	
-    	mProcessedImage = toBinary(mPictureData);
+    	//TODO : Shit 'n' shit
+    	//mProcessedImage = toBinary(mPictureData);
     	
     	
     	// Find Contours via OpenCV
+    	Bitmap blankBMP = Bitmap.createBitmap(mPictureData.getWidth(),mPictureData.getHeight(),Bitmap.Config.ARGB_8888);
     	Mat image = new Mat(mPictureData.getWidth(),mPictureData.getHeight(), CvType.CV_8UC4,new Scalar(4));
-    	Mat ITimage = new Mat(mPictureData.getWidth(),mPictureData.getHeight(), CvType.CV_8UC4,new Scalar(4));;
+    	Mat ITimage = new Mat(mPictureData.getWidth(),mPictureData.getHeight(), CvType.CV_8UC4,new Scalar(4));
+    	Mat newImg = new Mat(mPictureData.getWidth(),mPictureData.getHeight(), CvType.CV_8UC4,new Scalar(4));
+    	
     	Utils.bitmapToMat(mPictureData, image);
+    	Utils.bitmapToMat(blankBMP, newImg);
 
     	Imgproc.cvtColor(image, image, Imgproc.COLOR_RGB2GRAY);
 
@@ -1235,6 +1248,9 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     	
     	Imgproc.cvtColor(image, image, Imgproc.COLOR_GRAY2BGR);
     		
+
+    	Log.d(LOGTAG, "Contours : "+contours.size());
+    	
     	// Get a list of contour-related data
     	int[][] v = contoursToLists(contours);
     	// Sort the contour list according to the data
@@ -1255,20 +1271,25 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     		}
     	}
     	
+    	Log.d(LOGTAG, "Contours : "+contours.size());
     	// Draw the contours on the image
     	for(int i=0;i<contours.size();i++){
     		
     		int fac = (int)((levelTab[i])*(255.0/(max))+1);
     		if(currentDiag == -1 || Math.abs(v[i][1] - currentDiag) >= tresh){
+    			
     			currentDiag = v[i][1];
-    			Imgproc.drawContours(image, contours, i, new Scalar(fac,fac,fac), 3); //#4 square (blue)
+    			Imgproc.drawContours(newImg, contours, i, new Scalar(fac,fac,fac), 3); //#4 square (blue)
     		}
     		
     	}
     	
     	// Get back to picture bitmap
-    	Utils.matToBitmap(image, mPictureData);
-    	//setImg(picture);
+    	Utils.matToBitmap(newImg, mPictureData);
+    	
+    	
+    	// Going to int[][]
+    	mProcessedImage = toArray(mPictureData);
     }
     
     public int[] levels(int[][] values, int tresh){
@@ -1355,7 +1376,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     		}
     	}
     	
-    	int tres = 10;
+    	int tres = 5;
     	
     	for(int i=0;i< values.length;i++){
     		if(values[i][1] > tres){
@@ -1367,7 +1388,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     }
     
 
-    public int[][] toBinary(Bitmap bmpOriginal) {
+    public int[][] toArray(Bitmap bmpOriginal) {
         int width, height, threshold;
         height = bmpOriginal.getHeight();
         width = CAMERA_WIDTH;
@@ -1380,17 +1401,11 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
                 // get one pixel color
                 int pixel = bmpOriginal.getPixel(x, y);
                 //int value = (int)(((float)Color.red(pixel))*0.2126 + ((float)Color.green(pixel))*0.7152 + ((float)Color.blue(pixel))*0.0722) ;
-                int value = (Color.red(pixel)*212 + Color.green(pixel)*715 + Color.blue(pixel)*722) ;
-                // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
-                //get binary value
-                if(value < threshold){
-                	bmpBinary[y][x] = LEO_HIGH;
-                    //bmpBinary.setPixel(x, y, 0xFF000000);
-                } else{
-                	bmpBinary[y][x] = LEO_LOW;
-                    //bmpBinary.setPixel(x, y, 0xFFFFFFFF);
+                int value = (Color.red(pixel)) ;
+                if(value > 0){
+                	Log.d(LOGTAG,""+value);
                 }
-
+                bmpBinary[y][x] = value/1000;
             }
         }
         return bmpBinary;
@@ -1441,4 +1456,22 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         
         return mGestureDetector.onTouchEvent(event);
     }
+    
+    private BaseLoaderCallback mOpenCVCallBack = new BaseLoaderCallback(this) {
+    	@Override
+    	public void onManagerConnected(int status) {
+    	   switch (status) {
+    	       case LoaderCallbackInterface.SUCCESS:
+    	       {
+    	      Log.i(LOGTAG, "OpenCV loaded successfully");
+    	      // Create and set View
+    	      //setContentView(R.layout.);
+    	       } break;
+    	       default:
+    	       {
+    	      super.onManagerConnected(status);
+    	       } break;
+    	   }
+    	    }
+    	};
 }

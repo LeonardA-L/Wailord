@@ -1,26 +1,25 @@
 package filRouge.wailord;
 
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import android.util.Log;
 
-public class Nappe extends MeshObject {
+public class Nappe{
 
 	// TAGS pour les logs
 	final String POINTS = "POINTS";
 	final String INDICES = "INDICES";
 	final String COULEURS = "COULEURS";
-	
-	// constante utilisée pour les couleurs
-	final byte MAXCOLOR = (byte)255;
 		
 	private float[] nappeVertices;
-	private Buffer mVertBuff;
+	private FloatBuffer mVertBuff;
+	
     private ArrayList<Buffer> mIndBuff;
-    
-    private Buffer mColorBuff;
-    
+    private int nbStripe = 0; 
     private int indicesNumber = 0;
    
  	
@@ -28,26 +27,25 @@ public class Nappe extends MeshObject {
 	// Constructeur
 	public Nappe()
 	{
-        setVerts(100,3f);
-        setIndices(100);	
-        setCouleur(100);	
+        setVerts(10,3f);
+        setIndices(10);	
+        //setCouleur(10);	
 	}
 	
 	public Nappe(int definition, float hauteur)
 	{
 		setVerts(definition, hauteur);
 		setIndices(definition);
-    	setCouleur(definition);
+    	//setCouleur(definition);
 	}
 
 
 	private void setVerts(int taille, float hauteur) 
 	{	
-		// nombre de coordonnées : 3 coord par points.
-		int nbCoord = taille*taille*3;
+		// nombre de coordonnées : 3 coord par points + 4 par couleurs pour chaque point.
+		int nbCoord = taille*taille*3+taille*taille*4;
 		// pas, calculé à partir de la résolution demandée (taille du côté en nbr de points)
 		float pas = (float)40/(float)taille;
-		//Log.w(POINTS, "Test du pas : "+(float)pas);
 		// décalage si la taille est paire.
 		float offset = 0f;
 		int max = (taille-1)/2;
@@ -66,36 +64,66 @@ public class Nappe extends MeshObject {
 			Log.v(POINTS,"Coordonnée associée :"+(float)coord1[(int)i+max] );
 		}
 		
-		
+		//--------------------------------------------------//
 		Log.v(POINTS,"Début de la génération des points." );
 		
 		nappeVertices = new float[nbCoord];
-		
 		int ligne = 0;
-		// incrément de 3 pour avancer à chaque fois au point suivant.
-		for(int i = 0; i < nbCoord; i+=3)
+		// incrément de 7 pour avancer à chaque fois au point suivant.
+		for(int i = 0; i < nbCoord; i+=7)
 		{
 			// incrément des lignes.
-			if((i/3)%taille == 0 && i !=0)
+			if((i/7)%taille == 0 && i !=0)
 			{
 				ligne++;
 				Log.d(POINTS,"_______LIGNE = "+ligne );
 			}	
 			
-			nappeVertices[i] = (float) coord1[(i/3)%taille];
-			nappeVertices[i+1] = (float) -coord1[ligne];
+			// coordonnées : 
+			nappeVertices[i] = (float) coord1[(i/7)%taille];	// X
+			nappeVertices[i+1] = (float) -coord1[ligne];		// Y
 			//nappeVertices[i+2] = (float) hauteur; //-coord1[(i/3)%taille]*coord1[(i/3)%taille]-coord1[ligne]*coord1[ligne];
-			nappeVertices[i+2] = (float)(Math.random()*3); 
+			if((i/7)%taille == 0 || (i/7)%taille == taille-1 || ligne == 0 || ligne == taille)
+			{
+				nappeVertices[i+2] = hauteur;
+			}
+			else
+			{
+				nappeVertices[i+2] = hauteur + (float)(Math.random()*10) > 7F ? 2f : (-1f);
+			}
+			// couleurs :
+			if ((float)nappeVertices[i+2] == hauteur)
+			{	
+				nappeVertices[i+3] = .2f;		// RED  
+				nappeVertices[i+4] = .2f;		// GREEN
+				nappeVertices[i+5] = .6f;  		// BLUE
+				nappeVertices[i+6] = 255f;		// ALPHA
+			}
+			else
+			{
+				nappeVertices[i+3] = .8f;		// RED  
+				nappeVertices[i+4] = .8f;		// GREEN
+				nappeVertices[i+5] = .7f;  		// BLUE
+				nappeVertices[i+6] = 255f;		// ALPHA
+			}
+			
 			Log.d(POINTS,"Nouveau point : " );
-			Log.d(POINTS,"x = "+(float)nappeVertices[i]+"; y = "+(float)nappeVertices[i+1]+"; z = "+
-					(float)nappeVertices[i+2]);
+			Log.d(POINTS,"x = "+(float)nappeVertices[i]+
+						 "; y = "+(float)nappeVertices[i+1]+
+						 "; z = "+(float)nappeVertices[i+2]+
+						 "| R = "+(float)nappeVertices[i+3]+
+						 "G = "+(float)nappeVertices[i+4]+
+						 "B = "+(float)nappeVertices[i+5]+
+						 "Alpha ="+(float)nappeVertices[i+6]);
 			Log.d(POINTS,"____________________" );
 		}
-		
-		mVertBuff = fillBuffer(nappeVertices);	
+	
+		mVertBuff = ByteBuffer.allocateDirect(nappeVertices.length * 4).order(ByteOrder.LITTLE_ENDIAN).asFloatBuffer();
+		mVertBuff.put(nappeVertices);
+		mVertBuff.position(0);
 	}
 
-	public Buffer getVertex()
+	public FloatBuffer getVertex()
 	{
 		return mVertBuff;
 	}
@@ -105,8 +133,8 @@ public class Nappe extends MeshObject {
 	{
 		Log.v(INDICES, "Début de la génération des indices.");
 		
-		indicesNumber = (taille-1)*2*3;
-		int nbStripe = taille - 1;
+		indicesNumber = (taille-1)*2*3; 	// nombres de valeurs pour une bande de triangles.
+		nbStripe = taille - 1; 				// nombre de bandes de triangles
 		ArrayList<short[]> stripes = new ArrayList<short[]>();
 		
 		// remplissage de chaque bande de triangles.
@@ -135,8 +163,16 @@ public class Nappe extends MeshObject {
 			stripes.add(stripe);
 		}
 		
-		mIndBuff = new ArrayList<Buffer>();
 		
+		
+	/*	mIndBuff = ByteBuffer.allocateDirect(indicesNumber*nbStripe*2).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+		for(int i = 0; i < stripes.size(); i++)
+		{
+			Log.v(INDICES, "Stripe "+i+ " : "+(stripes.get(i))[1]);
+			mIndBuff.put(stripes.get(i));
+		}	*/
+		
+		mIndBuff = new ArrayList<Buffer>();
 		Log.v(INDICES, "Génération des indices OK.");
 		for(int i = 0; i < stripes.size(); i++)
 		{
@@ -145,77 +181,30 @@ public class Nappe extends MeshObject {
 		}	
 	}
 	
+	protected Buffer fillBuffer(short[] array)
+    {
+        // Each short takes 2 bytes
+        ByteBuffer bb = ByteBuffer.allocateDirect(2 * array.length);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        for (short s : array)
+            bb.putShort(s);
+        bb.rewind();
+        
+        return bb;
+        
+    }
+	
 	public ArrayList<Buffer> getInd()
 	{
 		return mIndBuff;
 	}
-	
-	// Initialisation des couleurs pour chaque point de la nappe
-	public void setCouleur(int taille)
-	{
-		Log.v(COULEURS, "Début de la génération des couleurs");
-		int nbCouleurs = taille*taille*4;
-		byte[] couleurs = new byte[nbCouleurs];	
-		int indicePoints = 2;
-		for(int i = 0; i < nbCouleurs; i+=4)
-		{
-			if( (float)nappeVertices[indicePoints] == 0f)
-			{
-				couleurs[i]   = 0;			// RED
-				couleurs[i+1] = MAXCOLOR;	// BLUE
-				couleurs[i+2] = 0;			// GREEN
-				couleurs[i+3] = MAXCOLOR;   // ALPHA
-			}
-			else if ( (float)nappeVertices[indicePoints] > 0f)
-			{
-				couleurs[i]   = MAXCOLOR;   // RED
-				couleurs[i+1] = 0;			// BLUE
-				couleurs[i+2] = 0;			// GREEN
-				couleurs[i+3] = MAXCOLOR;   // ALPHA
-			}
-			else
-			{
-				couleurs[i]   = 0;			// RED
-				couleurs[i+1] = 0;			// BLUE
-				couleurs[i+2] = MAXCOLOR;	// GREEN
-				couleurs[i+3] = MAXCOLOR;   // ALPHA
-			}
-			indicePoints+=3;
-		}
-		
-		/*
-		for(int i = 0; i < (nbCouleurs)-4; i+=4)
-		{
-				couleurs[i] = 0;			// RED
-				couleurs[i+1] = MAXCOLOR;	// BLUE
-				couleurs[i+2] = 0;			// GREEN
-				couleurs[i+3] = MAXCOLOR;   // ALPHA
-			Log.v(COULEURS,"Couleur du point "+i+" : ");
-			Log.v(COULEURS,"R :"+couleurs[i]+", G :"+couleurs[i+1]+", B :"+couleurs[i+2]+" || Alpha :"+couleurs[i+3]);
-		}*/
-		mColorBuff = fillBuffer(couleurs);
-	}
-	
-	public Buffer getCouleur()
-	{
-		return mColorBuff;
-	}
-	
-	@Override
+
 	public int getNumObjectVertex() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
-	@Override
+	
 	public int getNumObjectIndex() {
 		return indicesNumber;
 	}
-
-	@Override
-	public Buffer getBuffer(BUFFER_TYPE bufferType) {return null;}
-	@SuppressWarnings("unused")
-	private void setNorms() {}
-	@SuppressWarnings("unused")
-	private void setTexCoords(){}
 }

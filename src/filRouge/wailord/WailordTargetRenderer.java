@@ -6,6 +6,7 @@
 package filRouge.wailord;
 
 import java.nio.Buffer;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -51,8 +52,12 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
     static final float kObjectScale = 3.f;
 
     private Nappe mNappe1;
-    private Nappe mNappe2;
-    private Nappe mNappe3;
+    
+    private static final int POSITION_COMPONENT_COUNT = 3;
+    private static final int COLOR_COMPONENT_COUNT = 4;    
+    private static final int BYTES_PER_FLOAT = 4;
+    private static final int STRIDE = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT)*BYTES_PER_FLOAT;
+    
     
     // Reference to main activity
     private MainActivity mActivity;
@@ -119,60 +124,59 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
         
         // Explicitly render the Video Background
         Renderer.getInstance().drawVideoBackground();
-        
+        // réglages de quelques parammètres
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glEnable(GLES20.GL_CULL_FACE);        
         GLES20.glFrontFace(GLES20.GL_CCW); // pour utilisation avec la caméra arrière, sinon CW
             
-        // Render the RefFree UI elements depending on the current state
+        // render le refFreeFrame selon l'état courant
         mActivity.refFreeFrame.render();
         
-        // Did we find any trackables this frame?
+        // boucle à la recherche d'images traquées
         for (int tIdx = 0; tIdx < state.getNumTrackableResults(); tIdx++)
         {
             // Get the trackable:
             TrackableResult trackableResult = state.getTrackableResult(tIdx);
-            Matrix44F modelViewMatrix_Vuforia = Tool
-                .convertPose2GLMatrix(trackableResult.getPose());
+            Matrix44F modelViewMatrix_Vuforia = Tool.convertPose2GLMatrix(trackableResult.getPose());
             float[] modelViewMatrix = modelViewMatrix_Vuforia.getData();
-            
             float[] modelViewProjection = new float[16];
             Matrix.translateM(modelViewMatrix, 0, 0.0f, 0.0f, kObjectScale);
             Matrix.scaleM(modelViewMatrix, 0, kObjectScale, kObjectScale, kObjectScale);
-            //Matrix.scaleM(modelViewProjection, 0, 5, 5, 5);
             Matrix.multiplyMM(modelViewProjection, 0, vuforiaAppSession
                 .getProjectionMatrix().getData(), 0, modelViewMatrix, 0);
             
-            GLES20.glUseProgram(shaderProgramID);
-            
             // --------------------------------------------------------------
-            
-            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT, false, 0, mNappe1.getVertex());
-            GLES20.glVertexAttribPointer(aColorLocation,4, GLES20.GL_UNSIGNED_BYTE, false, 0, mNappe1.getCouleur());
-            
-            GLES20.glEnableVertexAttribArray(vertexHandle);  		// utiliser les points
+            GLES20.glUseProgram(shaderProgramID);   
+            FloatBuffer vertexData = mNappe1.getVertex();           		// récupération des points de la nappe
+            vertexData.position(0);
+            GLES20.glVertexAttribPointer(vertexHandle, POSITION_COMPONENT_COUNT, 
+            		GLES20.GL_FLOAT, false, STRIDE, vertexData);
+            GLES20.glEnableVertexAttribArray(vertexHandle);  				// utiliser les points
+            vertexData.position(POSITION_COMPONENT_COUNT);
+            GLES20.glVertexAttribPointer(aColorLocation, COLOR_COMPONENT_COUNT, 
+            		GLES20.GL_FLOAT, false, STRIDE, vertexData);
             GLES20.glEnableVertexAttribArray(aColorLocation);       // utiliser les couleurs
-         
-            GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, modelViewProjection, 0);
+            GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, modelViewProjection, 0); // matrice de projection
             
+           
             ArrayList<Buffer> stripeBuffer = new ArrayList<Buffer>();
             stripeBuffer = mNappe1.getInd();
             for(int i = 0; i < stripeBuffer.size() ; i++)
     		{
-    			GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, mNappe1.getNumObjectIndex(), GL11.GL_UNSIGNED_SHORT, stripeBuffer.get(i));
+    			GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, mNappe1.getNumObjectIndex(), 
+    					GL11.GL_UNSIGNED_SHORT, stripeBuffer.get(i));
     		}
-            
-       
+    		
+            /*
+            ShortBuffer indices = mNappe1.getInd();
+            GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, mNappe1.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT, indices);
+			*/
             // ---------------------------
             GLES20.glDisableVertexAttribArray(vertexHandle);
             GLES20.glDisableVertexAttribArray(aColorLocation);
-            
-           
             SampleUtils.checkGLError("UserDefinedTargets renderFrame");
         }
-        
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-        
         Renderer.getInstance().end();
     }
     

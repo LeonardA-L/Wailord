@@ -2,6 +2,8 @@
 public class FillAndSmooth {
 	static int[][] tab;
 	
+	final static int PAS = 10;
+	
 	final static int BORDER = -2;
 	final static int BLANK = -1;
 	
@@ -12,8 +14,8 @@ public class FillAndSmooth {
 	static int jTab = 0;
 	
 	static Stack memory = new Stack(10000); //0->x  1->y
-	//On suppose que les bordures ne représentent pas plus de 10% du tableau
-	static int[][] border = new int[(int)(0.3*LARGE*HAUT)][3];
+	
+	static int[][] border; 
 	static int borderLast = 0;
 	
 	static int lvl = 0;
@@ -27,6 +29,9 @@ public class FillAndSmooth {
 		tab = binarizedAray;
 		LARGE = binarizedAray[0].length;
 		HAUT = binarizedAray.length;
+		
+		//On suppose que les bordures ne représentent pas plus de 30% du tableau
+		border = new int[(int)(0.3*LARGE*HAUT)][3];
 		
 		start(nbIteSmooth);
 		
@@ -231,14 +236,14 @@ public class FillAndSmooth {
 					ans = (int)tab[i][j];
 				}
 				
-				if(tab[i][j]==BLANK && ans == lvl-10){
+				if(tab[i][j]==BLANK && ans == lvl-PAS){
 					memory.push(i,j);
 					return;
 				}
 			}
 		}
 		
-		lvl+=10;
+		lvl+=PAS;
 		for(int i = 1; i<tab.length-1; i++){
 			for(int j = 1 ; j<tab[0].length - 1 ; j++){
 				if(tab[i][j]==BLANK){
@@ -303,7 +308,7 @@ public class FillAndSmooth {
 				if( (tab[i][j] == BORDER) && //si on tombe sur une bordure et qu'autour il y a un cas traité
 						//TODO : amélioration de l'ordre i+1 / i-1 etc...
 						( (tab[i+1][j] == lvl ) || (tab[i-1][j] == lvl) || (tab[i][j+1] == lvl) || (tab[i][j-1] == lvl) ||
-								(tab[i+1][j] == lvl-10 ) || (tab[i-1][j] == lvl-10) || (tab[i][j+1] == lvl-10) || (tab[i][j-1] == lvl-10)) ){
+								(tab[i+1][j] == lvl-PAS ) || (tab[i-1][j] == lvl-PAS) || (tab[i][j+1] == lvl-PAS) || (tab[i][j-1] == lvl-PAS)) ){
 					tab[i][j] = lvl;
 					
 					//Ajout dans tableau de bordure

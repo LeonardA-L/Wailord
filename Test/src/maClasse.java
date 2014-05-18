@@ -5,6 +5,8 @@ public class maClasse {
 
 	static int[][] tab;
 	
+	final static int PAS = 10;
+	
 	final static int BORDER = -2;
 	final static int BLANK = -1;
 	
@@ -57,7 +59,7 @@ public class maClasse {
 		
 		fade(10);
 		
-		//display(tab);
+		display(tab);
 		System.out.println("done");
 		
 	}
@@ -220,14 +222,14 @@ public class maClasse {
 					ans = (int)tab[i][j];
 				}
 				
-				if(tab[i][j]==BLANK && ans == lvl-10){
+				if(tab[i][j]==BLANK && ans == lvl-PAS){
 					memory.push(i,j);
 					return;
 				}
 			}
 		}
 		
-		lvl+=10;
+		lvl+=PAS;
 		for(int i = 1; i<tab.length-1; i++){
 			for(int j = 1 ; j<tab[0].length - 1 ; j++){
 				if(tab[i][j]==BLANK){
@@ -298,7 +300,7 @@ public class maClasse {
 				if( (tab[i][j] == BORDER) && //si on tombe sur une bordure et qu'autour il y a un cas traité
 						//TODO : amélioration de l'ordre i+1 / i-1 etc...
 						( (tab[i+1][j] == lvl ) || (tab[i-1][j] == lvl) || (tab[i][j+1] == lvl) || (tab[i][j-1] == lvl) ||
-								(tab[i+1][j] == lvl-10 ) || (tab[i-1][j] == lvl-10) || (tab[i][j+1] == lvl-10) || (tab[i][j-1] == lvl-10)) ){
+								(tab[i+1][j] == lvl-PAS ) || (tab[i-1][j] == lvl-PAS) || (tab[i][j+1] == lvl-PAS) || (tab[i][j-1] == lvl-PAS)) ){
 					tab[i][j] = lvl;
 					
 					//Ajout dans tableau de bordure

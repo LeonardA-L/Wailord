@@ -715,9 +715,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
 
 	private void initApplicationAR() {
 		 Log.d(LOGTAG, "initApplicationAR");
-		TextView hellotext = (TextView)findViewById(R.id.helloTxt);
-    	hellotext.setText("IAAR");
-    	
+
     	// Do application initialization
         
     	//TODO : Je sais.

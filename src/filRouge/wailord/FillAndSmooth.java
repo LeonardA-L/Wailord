@@ -26,7 +26,10 @@ public class FillAndSmooth {
 		
 		start(nbIteSmooth);
 		
-		
+	}
+	
+	public static int[][] pullTab(){
+		return tab;
 	}
 	
 	public static void start(int nbIte){

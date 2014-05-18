@@ -5,8 +5,9 @@ public class FillAndSmooth {
 	final static int BORDER = -2;
 	final static int BLANK = -1;
 	
-	final static int LARGE = 40*16;
-	final static int HAUT = 40*12;
+	static int LARGE = 40*16;
+	static int HAUT = 40*12;
+	
 	static int iTab = 0;
 	static int jTab = 0;
 	
@@ -18,13 +19,23 @@ public class FillAndSmooth {
 	static int lvl = 0;
 	static int lvlLast = 0;
 	
-	//static int[][] memory = new int[1000][2]; //0->x  1->y
+	public FillAndSmooth(int[][] binarizedAray, int nbIteSmooth){
+		tab = binarizedAray;
+		LARGE = binarizedAray[0].length;
+		HAUT = binarizedAray.length;
+		
+		start(nbIteSmooth);
+		
+		
+	}
 	
-	public static void main(String[] params){
-		tab = new int[HAUT][LARGE];
+	public static int[][] pullTab(){
+		return tab;
+	}
+	
+	public static void start(int nbIte){
 		
 		intro(0);
-		test(0);
 		
 		
 		//display(tab);
@@ -41,7 +52,7 @@ public class FillAndSmooth {
 				int x = memory.back()[0];
 				int y = memory.back()[1];
 				memory.pop();
-				fill(x,y,0);
+				fill(x,y);
 			}
 			lvlLast=lvl;
 			findNextBlank();
@@ -52,10 +63,9 @@ public class FillAndSmooth {
 			}
 		}
 		
-		fade(10);
+		fade(nbIte);
 		
 		//display(tab);
-		System.out.println("done");
 		
 	}
 	
@@ -235,7 +245,7 @@ public class FillAndSmooth {
 		}	
 	}
 	//Da Methode to fill
-	public static void fill(int i, int j, int mem ){
+	public static void fill(int i, int j){
 		iTab = i;
 		jTab = j;
 		while((int)(tab[iTab][jTab])==BLANK){

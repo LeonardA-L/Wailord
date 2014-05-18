@@ -8,8 +8,8 @@ public class maClasse {
 	final static int BORDER = -2;
 	final static int BLANK = -1;
 	
-	final static int LARGE = 1*16;
-	final static int HAUT = 1*12;
+	final static int LARGE = 40*16;
+	final static int HAUT = 40*12;
 	static int iTab = 0;
 	static int jTab = 0;
 	
@@ -26,46 +26,24 @@ public class maClasse {
 	public static void main(String[] params){
 		tab = new int[HAUT][LARGE];
 		
-		for(int i = 0 ; i < tab.length ; i++){
-			for( int j = 0 ; j < tab[0].length ; j++){
-				tab[i][j] = -1;
-			}
-		}
-		
 		intro(0);
+		test(0);
 		
 		
-		display(tab);
-		//System.out.println("Hello World");
-		
-		//daMeth(1,1);
 		//display(tab);
 		
-		int[] tabe = new int[2];
-		System.out.println("dsqg");
-		System.out.println(tabe[0]);
-		System.out.println("dsqg");
-		if(tabe[1]==0){
-			System.out.println("true");
-		} else {
-			System.out.println("false");
-		}
-		//display(fade());
-		
-		//TODO : faire une boucle avec point de départ du remplissage
-		//							et niveau altitude
 		
 		//initialisation
 		memory.push(1, 1);
-				//Phase Moteur de remplissage
+		
+		//Phase Moteur de remplissage
 		while(!memory.empty()){
 			
 			while(!memory.empty()){
-				//TODO : supprimer le dernier element
+				//supprimer le dernier element
 				int x = memory.back()[0];
 				int y = memory.back()[1];
 				memory.pop();
-				//System.out.println("Main : " + x + " "+ y);
 				fill(x,y,0);
 			}
 			lvlLast=lvl;
@@ -79,7 +57,8 @@ public class maClasse {
 		
 		fade(10);
 		
-		display(tab);
+		//display(tab);
+		System.out.println("done");
 		
 	}
 	
@@ -155,6 +134,25 @@ public class maClasse {
 			tab[0][i]=bounds;
 			tab[tab.length-1][i]=bounds;
 		}
+	}
+	
+	//Initialisation d'une map
+	public static void test (int bounds){
+		
+		for(int i = 0 ; i < tab.length ; i++){
+			for( int j = 0 ; j < tab[0].length ; j++){
+				tab[i][j] = -1;
+			}
+		}
+		
+		for(int i = 0; i < tab.length; i++){
+			tab[i][0]=bounds;
+			tab[i][tab[0].length-1]=bounds;
+		}
+		for(int i = 0; i < tab[0].length; i++){
+			tab[0][i]=bounds;
+			tab[tab.length-1][i]=bounds;
+		}
 		
 		/*tab[5][5]=BORDER;
 		tab[6][4]=BORDER;
@@ -182,7 +180,7 @@ public class maClasse {
 			tab[10][i]=BORDER;
 		}
 		
-		/*
+		
 		for(int i = 80; i < 120; i++){
 			tab[i][79]=BORDER;
 			tab[i][119]=BORDER;

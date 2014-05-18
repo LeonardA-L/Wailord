@@ -1179,7 +1179,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     	//TODO: Leo : Do your thing, buddy !
     	
     	//TODO: Julien : Do your thing, buddy !
-    	
+    	mRenderer.initNappe();
     }
     
 

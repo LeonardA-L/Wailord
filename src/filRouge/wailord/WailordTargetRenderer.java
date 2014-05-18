@@ -156,17 +156,7 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
             		GLES20.GL_FLOAT, false, STRIDE, vertexData);
             GLES20.glEnableVertexAttribArray(aColorLocation);       // utiliser les couleurs
             GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, modelViewProjection, 0); // matrice de projection
-            
-           /*
-            ArrayList<Buffer> stripeBuffer = new ArrayList<Buffer>();
-            stripeBuffer = mNappe1.getInd();
-            for(int i = 0; i < stripeBuffer.size(); i++)
-    		{
-    			GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNappe1.getNumObjectIndex(), 
-    					GL11.GL_UNSIGNED_SHORT, stripeBuffer.get(i));
-    		}
-    		*/
-            
+                     
             Buffer indices = mNappe1.getInd2();
             GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNappe1.getNumIndex(), GLES20.GL_UNSIGNED_SHORT, indices);
 		
@@ -185,7 +175,7 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
         Log.d(LOGTAG, "initRendering");
        
         // notre/nos objets
-        mNappe1 = new Nappe(vuforiaAppSession.getmProcessedImage());
+        mNappe1 = new Nappe();
         // Define clear color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
         
@@ -196,6 +186,13 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
         mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgramID,"modelViewProjectionMatrix");
         aColorLocation = GLES20.glGetAttribLocation(shaderProgramID, A_COLOR);
       
+    }
+    
+    public void initNappe()
+    {
+        // notre/nos objets
+        mNappe1.setImage(vuforiaAppSession.getmProcessedImage());
+        Log.w("SIZE", "Taille de l'image : "+vuforiaAppSession.getmProcessedImage().length+"x"+vuforiaAppSession.getmProcessedImage()[1].length);
     }
    
 }

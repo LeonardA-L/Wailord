@@ -69,8 +69,8 @@ public class Nappe{
 				  { 2, 2, 3, 2},
 				  { 2, 3, 4, 3},
 				};*/
-		setVertsImage(processedImage);  // générer les points et leur couleur
-		setIndicesImages(processedImage.length, processedImage[1].length); // générer les indices des triangles.
+		setVertsImage(aProcessedImage);  // générer les points et leur couleur
+		setIndicesImages(aProcessedImage.length, aProcessedImage[1].length); // générer les indices des triangles.
 	}
 
 	// -----------------------------------------------------
@@ -204,8 +204,8 @@ public class Nappe{
 	private void setVertsImage(int[][] image) 
 	{	
 		// dimension du tableau
-		int longueur = image.length;
-		int largeur = image[1].length;
+		int longueur = image.length/16;
+		int largeur = image[1].length/16;
 		
 		
 		// nombre de coordonnées : 3 coord par points + 4 par couleurs pour chaque point -> taille totale du tableau de points.
@@ -219,7 +219,7 @@ public class Nappe{
 		
 		// tableau de coordonnées fixes dans la longueur :
 		float[] coordLong = new float[longueur];
-		float halfLong = (longueur/2);
+		//float halfLong = (longueur/2);
 
 		int index = 0;
 		float valeur = -20/2;			// modifier ici et en dessous en cas de changement de taille
@@ -233,7 +233,7 @@ public class Nappe{
 		
 		// tableau de coordonnées fixes dans la largeur :
 		float[] coordLarg = new float[largeur];
-		float halfLarg = (largeur/2);
+		//float halfLarg = (largeur/2);
 
 		int index2 = 0;
 		float valeur2 = -40/2;			// modifier ici et en dessous en cas de changement de taille
@@ -426,5 +426,12 @@ public class Nappe{
 	
 	public int getNumIndex() {
 		return indicesNumber*nbStripe;
+	}
+	
+	public void setImage(int[][] image)
+	{
+		processedImage = image;
+		this.setVertsImage(processedImage);
+		this.setIndicesImages(processedImage.length/16, processedImage[1].length/16);
 	}
 }

@@ -19,6 +19,10 @@ public class FillAndSmooth {
 	static int lvl = 0;
 	static int lvlLast = 0;
 	
+	/** Constructeur
+	 * binarizedAray : Tableau binarisée -1: vide (blanc) -2: traits (noir)
+	 * nbIteSmooth : Nombre d'itération de smoothage
+	 */
 	public FillAndSmooth(int[][] binarizedAray, int nbIteSmooth){
 		tab = binarizedAray;
 		LARGE = binarizedAray[0].length;
@@ -28,6 +32,7 @@ public class FillAndSmooth {
 		
 	}
 	
+	//On récupère le tableau une fois traité
 	public static int[][] pullTab(){
 		return tab;
 	}

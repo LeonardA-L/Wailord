@@ -76,6 +76,7 @@ public class FillAndSmooth {
 	}
 	
 	//Affichage du tableau passé en paramètre
+	/*
 	public static void display(int[][] tab){
 		for(int i = 0 ; i < tab.length ; i++){
 			for( int j = 0 ; j < tab[0].length ; j++){
@@ -84,6 +85,7 @@ public class FillAndSmooth {
 			System.out.println();
 		}
 	}
+	*/
 	
 	//Lissage du niveau
 	public static void fade(int nbIte){
@@ -147,78 +149,6 @@ public class FillAndSmooth {
 			tab[0][i]=bounds;
 			tab[tab.length-1][i]=bounds;
 		}
-	}
-	
-	//Initialisation d'une map
-	public static void test (int bounds){
-		
-		for(int i = 0 ; i < tab.length ; i++){
-			for( int j = 0 ; j < tab[0].length ; j++){
-				tab[i][j] = -1;
-			}
-		}
-		
-		for(int i = 0; i < tab.length; i++){
-			tab[i][0]=bounds;
-			tab[i][tab[0].length-1]=bounds;
-		}
-		for(int i = 0; i < tab[0].length; i++){
-			tab[0][i]=bounds;
-			tab[tab.length-1][i]=bounds;
-		}
-		
-		/*tab[5][5]=BORDER;
-		tab[6][4]=BORDER;
-		tab[4][1]=0;
-		tab[4][2]=0;
-		tab[4][3]=0;
-		tab[4][4]=0;
-		tab[4][5]=0;*/
-		
-		for(int i = 2; i < 6; i++){
-			tab[i][2]=BORDER;
-			tab[i][5]=BORDER;
-		}
-		for(int i = 2; i < 6; i++){
-			tab[2][i]=BORDER;
-			tab[5][i]=BORDER;
-		}
-		
-		for(int i = 8; i < 11; i++){
-			tab[i][7]=BORDER;
-			tab[i][10]=BORDER;
-		}
-		for(int i = 8; i < 11; i++){
-			tab[7][i]=BORDER;
-			tab[10][i]=BORDER;
-		}
-		
-		
-		for(int i = 80; i < 120; i++){
-			tab[i][79]=BORDER;
-			tab[i][119]=BORDER;
-		}
-		for(int i = 80; i < 120; i++){
-			tab[79][i]=BORDER;
-			tab[119][i]=BORDER;
-		}
-		
-		for(int i = 90; i < 110; i++){
-			tab[i][89]=BORDER;
-			tab[i][109]=BORDER;
-		}
-		for(int i = 90; i < 110; i++){
-			tab[89][i]=BORDER;
-			tab[109][i]=BORDER;
-		}
-		/*
-		tab[tab.length-4][tab.length-4]=BLANK;
-		tab[tab.length-5][tab.length-5]=BORDER;
-		tab[tab.length-6][tab.length-5]=BORDER;
-		tab[tab.length-6][tab.length-4]=BORDER;
-		tab[tab.length-6][tab.length-3]=BORDER;
-		tab[tab.length-6][tab.length-2]=BORDER;*/
-
 	}
 	
 	//Trouve la prochaine zone à partir de laquelle commencer le remplissage

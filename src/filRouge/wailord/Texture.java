@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 
+
 // Support class for the Vuforia samples applications.
 // Exposes functionality for loading a texture from the APK.
 public class Texture

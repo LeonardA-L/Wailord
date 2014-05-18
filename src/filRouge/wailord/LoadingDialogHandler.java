@@ -13,6 +13,7 @@ import android.os.Message;
 import android.view.View;
 
 
+
 public final class LoadingDialogHandler extends Handler
 {
     private final WeakReference<Activity> mActivity;

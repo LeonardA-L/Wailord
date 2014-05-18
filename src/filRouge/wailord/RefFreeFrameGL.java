@@ -8,10 +8,10 @@ package filRouge.wailord;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import android.opengl.Matrix;
 
 import android.content.res.Configuration;
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 import android.util.Log;
 
 import com.qualcomm.vuforia.Matrix44F;

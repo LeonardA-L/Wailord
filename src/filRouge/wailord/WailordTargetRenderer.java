@@ -7,12 +7,9 @@ package filRouge.wailord;
 
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -25,6 +22,7 @@ import com.qualcomm.vuforia.State;
 import com.qualcomm.vuforia.Tool;
 import com.qualcomm.vuforia.TrackableResult;
 import com.qualcomm.vuforia.Vuforia;
+
 
 
 // The renderer class for the ImageTargetsBuilder sample. 
@@ -170,7 +168,7 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
     		*/
             
             Buffer indices = mNappe1.getInd2();
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNappe1.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT, indices);
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNappe1.getNumIndex(), GLES20.GL_UNSIGNED_SHORT, indices);
 		
             // ---------------------------
             GLES20.glDisableVertexAttribArray(vertexHandle);
@@ -187,7 +185,7 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
         Log.d(LOGTAG, "initRendering");
        
         // notre/nos objets
-        mNappe1 = new Nappe(101,2f, vuforiaAppSession.getmProcessedImage());
+        mNappe1 = new Nappe(vuforiaAppSession.getmProcessedImage());
         // Define clear color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
         

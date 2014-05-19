@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 
+
 public abstract class MeshObject
 {
     
@@ -80,6 +81,19 @@ public abstract class MeshObject
         bb.order(ByteOrder.LITTLE_ENDIAN);
         for (short s : array)
             bb.putShort(s);
+        bb.rewind();
+        
+        return bb;
+        
+    }
+    
+    
+    protected Buffer fillBuffer(byte[] array)
+    {
+        ByteBuffer bb = ByteBuffer.allocateDirect(1 * array.length);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+        for (byte s : array)
+            bb.put(s);
         bb.rewind();
         
         return bb;

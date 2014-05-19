@@ -5,7 +5,8 @@
 
 package filRouge.wailord;
 
-import java.util.Vector;
+import java.nio.Buffer;
+import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -20,8 +21,8 @@ import com.qualcomm.vuforia.Renderer;
 import com.qualcomm.vuforia.State;
 import com.qualcomm.vuforia.Tool;
 import com.qualcomm.vuforia.TrackableResult;
-import com.qualcomm.vuforia.VIDEO_BACKGROUND_REFLECTION;
 import com.qualcomm.vuforia.Vuforia;
+
 
 
 // The renderer class for the ImageTargetsBuilder sample. 
@@ -29,28 +30,33 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
 {
     private static final String LOGTAG = "UserDefinedTargetRenderer";
     
-    MainActivity vuforiaAppSession;
     
-    public boolean mIsActive = false;
+    MainActivity vuforiaAppSession;  
+    public boolean mIsActive = false;     
     
-    private Vector<Texture> mTextures;
+    // shader program
+    private int shaderProgramID;  
+    // vertex Coordinates
+    private int vertexHandle;  
+    private static final String A_POSITION = "a_Position";
+ 
+    // colors
+    private  static final String A_COLOR = "a_Color";
+    private int aColorLocation;
     
-    private int shaderProgramID;
-    
-    private int vertexHandle;
-    
-    private int normalHandle;
-    
-    private int textureCoordHandle;
-    
+    // View matrix for orientation ?
     private int mvpMatrixHandle;
-    
-    private int texSampler2DHandle;
-    
+       
     // Constants:
     static final float kObjectScale = 3.f;
+
+    private Nappe mNappe1;
     
-    private Teapot mTeapot;
+    private static final int POSITION_COMPONENT_COUNT = 3;
+    private static final int COLOR_COMPONENT_COUNT = 4;    
+    private static final int BYTES_PER_FLOAT = 4;
+    private static final int STRIDE = (POSITION_COMPONENT_COUNT + COLOR_COMPONENT_COUNT)*BYTES_PER_FLOAT;
+    
     
     // Reference to main activity
     private MainActivity mActivity;
@@ -117,65 +123,49 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
         
         // Explicitly render the Video Background
         Renderer.getInstance().drawVideoBackground();
-        
+        // réglages de quelques parammètres
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        GLES20.glEnable(GLES20.GL_CULL_FACE);
-        if (Renderer.getInstance().getVideoBackgroundConfig().getReflection() == VIDEO_BACKGROUND_REFLECTION.VIDEO_BACKGROUND_REFLECTION_ON)
-            GLES20.glFrontFace(GLES20.GL_CW); // Front camera
-        else
-            GLES20.glFrontFace(GLES20.GL_CCW); // Back camera
+        GLES20.glEnable(GLES20.GL_CULL_FACE);        
+        GLES20.glFrontFace(GLES20.GL_CCW); // pour utilisation avec la caméra arrière, sinon CW
             
-        // Render the RefFree UI elements depending on the current state
+        // render le refFreeFrame selon l'état courant
         mActivity.refFreeFrame.render();
         
-        // Did we find any trackables this frame?
+        // boucle à la recherche d'images traquées
         for (int tIdx = 0; tIdx < state.getNumTrackableResults(); tIdx++)
         {
             // Get the trackable:
             TrackableResult trackableResult = state.getTrackableResult(tIdx);
-            Matrix44F modelViewMatrix_Vuforia = Tool
-                .convertPose2GLMatrix(trackableResult.getPose());
+            Matrix44F modelViewMatrix_Vuforia = Tool.convertPose2GLMatrix(trackableResult.getPose());
             float[] modelViewMatrix = modelViewMatrix_Vuforia.getData();
-            
             float[] modelViewProjection = new float[16];
             Matrix.translateM(modelViewMatrix, 0, 0.0f, 0.0f, kObjectScale);
-            Matrix.scaleM(modelViewMatrix, 0, kObjectScale, kObjectScale,
-                kObjectScale);
+            Matrix.scaleM(modelViewMatrix, 0, kObjectScale, kObjectScale, kObjectScale);
             Matrix.multiplyMM(modelViewProjection, 0, vuforiaAppSession
                 .getProjectionMatrix().getData(), 0, modelViewMatrix, 0);
             
-            GLES20.glUseProgram(shaderProgramID);
-            
-            GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
-                false, 0, mTeapot.getVertices());
-            GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT,
-                false, 0, mTeapot.getNormals());
-            GLES20.glVertexAttribPointer(textureCoordHandle, 2,
-                GLES20.GL_FLOAT, false, 0, mTeapot.getTexCoords());
-            
-            GLES20.glEnableVertexAttribArray(vertexHandle);
-            GLES20.glEnableVertexAttribArray(normalHandle);
-            GLES20.glEnableVertexAttribArray(textureCoordHandle);
-            
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,
-                mTextures.get(0).mTextureID[0]);
-            GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false,
-                modelViewProjection, 0);
-            GLES20.glUniform1i(texSampler2DHandle, 0);
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES,
-                mTeapot.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,
-                mTeapot.getIndices());
-            
+            // --------------------------------------------------------------
+            GLES20.glUseProgram(shaderProgramID);   
+            FloatBuffer vertexData = mNappe1.getVertex();           		// récupération des points de la nappe
+            vertexData.position(0);
+            GLES20.glVertexAttribPointer(vertexHandle, POSITION_COMPONENT_COUNT, 
+            		GLES20.GL_FLOAT, false, STRIDE, vertexData);
+            GLES20.glEnableVertexAttribArray(vertexHandle);  				// utiliser les points
+            vertexData.position(POSITION_COMPONENT_COUNT);
+            GLES20.glVertexAttribPointer(aColorLocation, COLOR_COMPONENT_COUNT, 
+            		GLES20.GL_FLOAT, false, STRIDE, vertexData);
+            GLES20.glEnableVertexAttribArray(aColorLocation);       // utiliser les couleurs
+            GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, modelViewProjection, 0); // matrice de projection
+                     
+            Buffer indices = mNappe1.getInd2();
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, mNappe1.getNumIndex(), GLES20.GL_UNSIGNED_SHORT, indices);
+		
+            // ---------------------------
             GLES20.glDisableVertexAttribArray(vertexHandle);
-            GLES20.glDisableVertexAttribArray(normalHandle);
-            GLES20.glDisableVertexAttribArray(textureCoordHandle);
-            
+            GLES20.glDisableVertexAttribArray(aColorLocation);
             SampleUtils.checkGLError("UserDefinedTargets renderFrame");
         }
-        
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
-        
         Renderer.getInstance().end();
     }
     
@@ -183,48 +173,26 @@ public class WailordTargetRenderer implements GLSurfaceView.Renderer
     private void initRendering()
     {
         Log.d(LOGTAG, "initRendering");
-        
-        mTeapot = new Teapot();
-        
+       
+        // notre/nos objets
+        mNappe1 = new Nappe();
         // Define clear color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f
-            : 1.0f);
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, Vuforia.requiresAlpha() ? 0.0f : 1.0f);
         
-        // Now generate the OpenGL texture objects and add settings
-        for (Texture t : mTextures)
-        {
-            GLES20.glGenTextures(1, t.mTextureID, 0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, t.mTextureID[0]);
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-            GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D,
-                GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-            GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA,
-                t.mWidth, t.mHeight, 0, GLES20.GL_RGBA,
-                GLES20.GL_UNSIGNED_BYTE, t.mData);
-        }
+        shaderProgramID = SampleUtils.createProgramFromShaderSrc(CubeShaders.WAILORD_MESH_VERTEX_SHADER,
+        CubeShaders.WAILORD_MESH_FRAGMENT_SHADER);
         
-        shaderProgramID = SampleUtils.createProgramFromShaderSrc(
-            CubeShaders.CUBE_MESH_VERTEX_SHADER,
-            CubeShaders.CUBE_MESH_FRAGMENT_SHADER);
-        
-        vertexHandle = GLES20.glGetAttribLocation(shaderProgramID,
-            "vertexPosition");
-        normalHandle = GLES20.glGetAttribLocation(shaderProgramID,
-            "vertexNormal");
-        textureCoordHandle = GLES20.glGetAttribLocation(shaderProgramID,
-            "vertexTexCoord");
-        mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgramID,
-            "modelViewProjectionMatrix");
-        texSampler2DHandle = GLES20.glGetUniformLocation(shaderProgramID,
-            "texSampler2D");
+        vertexHandle = GLES20.glGetAttribLocation(shaderProgramID, A_POSITION);
+        mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgramID,"modelViewProjectionMatrix");
+        aColorLocation = GLES20.glGetAttribLocation(shaderProgramID, A_COLOR);
+      
     }
     
-    
-    public void setTextures(Vector<Texture> textures)
+    public void initNappe()
     {
-        mTextures = textures;
-        
+        // notre/nos objets
+        mNappe1.setImage(vuforiaAppSession.getmProcessedImage());
+        Log.w("SIZE", "Taille de l'image : "+vuforiaAppSession.getmProcessedImage().length+"x"+vuforiaAppSession.getmProcessedImage()[1].length);
     }
-    
+   
 }

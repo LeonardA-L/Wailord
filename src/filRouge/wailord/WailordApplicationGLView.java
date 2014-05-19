@@ -15,6 +15,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
+
 // Support class for the Vuforia sample applications
 // Responsible for setting up and configuring the OpenGL surface view.
 // This class does not contain any Vuforia specific code. 

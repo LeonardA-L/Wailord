@@ -1,6 +1,8 @@
 package filRouge.wailord;
 
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -28,6 +30,7 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -71,7 +74,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
 	private static final String LOGTAG = "leMain";
 	
 	// Settings (changed in the setting activity)
-	public static int LightTreshold = 127;
+	public static int LightTreshold = 200;
 	public static int SmoothingIterations = 4;
 	
     private GestureDetector mGestureDetector;
@@ -134,9 +137,18 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     Camera mTheCamera;
     private Bitmap mPictureData;
     private int[][] mProcessedImage;
-    public static final int CAMERA_WIDTH = 320;
-    public static final int LEO_HIGH = 1;
-    public static final int LEO_LOW = 0;
+    public int[][] getmProcessedImage() {
+		return mProcessedImage;
+	}
+
+	public void setmProcessedImage(int[][] mProcessedImage) {
+		this.mProcessedImage = mProcessedImage;
+	}
+
+	public static final int CAMERA_WIDTH = 112;
+	public static final int CAMERA_HEIGHT = 84;
+    public static final int LEO_HIGH = -2;
+    public static final int LEO_LOW = -1;
 
     
     // Time Measurement
@@ -182,7 +194,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         
         // Load any sample specific textures:
         mTextures = new Vector<Texture>();
-        loadTextures();
+        //loadTextures();
         
        // Supposed to handle autofocus
        // The class is in the UserDefinedTarget sample
@@ -788,7 +800,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
         
         
         mRenderer = new WailordTargetRenderer(this, this);
-        mRenderer.setTextures(mTextures);
+        //mRenderer.setTextures(mTextures);
         mGlView.setRenderer(mRenderer);
         
         addOverlayView(true);
@@ -1225,8 +1237,23 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     	//mPictureData = toBinary(mPictureData);
     	//TODO : Shit 'n' shit
     	//mProcessedImage = toBinary(mPictureData);
+    	/*
+    	String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+		FileOutputStream out=null;
+		File file = new File(extStorageDirectory, "lefichier.png");
+		try {
+		       out = new FileOutputStream(file);
+		       mPictureData.compress(Bitmap.CompressFormat.PNG, 90, out);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		} finally {
+		       try{
+		           out.close();
+		       } catch(Throwable ignore) {}
+		}	
+    	*/
     	
-    	
+    	/*
     	// Find Contours via OpenCV
     	Bitmap blankBMP = Bitmap.createBitmap(mPictureData.getWidth(),mPictureData.getHeight(),Bitmap.Config.ARGB_8888);
     	Mat image = new Mat(mPictureData.getWidth(),mPictureData.getHeight(), CvType.CV_8UC4,new Scalar(4));
@@ -1286,10 +1313,69 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
     	
     	// Get back to picture bitmap
     	Utils.matToBitmap(newImg, mPictureData);
+    	*/
+    	//Bitmap resized = Bitmap.createBitmap(112,84,Bitmap.Config.ARGB_8888);
+    	Bitmap resized = Bitmap.createScaledBitmap(mPictureData, CAMERA_WIDTH,CAMERA_HEIGHT, true);
     	
+    	String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
+		FileOutputStream out=null;
+		File file = new File(extStorageDirectory, "lefichier.png");
+		try {
+		       out = new FileOutputStream(file);
+		       resized.compress(Bitmap.CompressFormat.PNG, 90, out);
+		} catch (Exception e) {
+		    e.printStackTrace();
+		} finally {
+		       try{
+		           out.close();
+		       } catch(Throwable ignore) {}
+		}
+    	
+    	mProcessedImage = toBinary(resized);
+    	mProcessedImage = FillAndSmooth.FillDatAray(mProcessedImage, 0);
+
+    	
+
+
     	
     	// Going to int[][]
-    	mProcessedImage = toArray(mPictureData);
+    	//mProcessedImage = toArray(mPictureData);
+    	int[][] cpy = new int[mProcessedImage.length][mProcessedImage[0].length];
+    	for(int i=0;i<cpy.length;i++){
+    		for(int j=0;j<cpy[i].length;j++){
+    			//cpy[i][j] = mProcessedImage[i][j];
+    			cpy[i][j] =0;
+    		}
+    	}
+    	mProcessedImage = smoothSeveral(mProcessedImage, cpy, 12);
+    	for(int i=0;i<mProcessedImage[0].length;i++){
+    		if(mProcessedImage[mProcessedImage.length/2][i]>0){
+    			//Log.w("OKLOL","Lol : "+mProcessedImage[mProcessedImage.length/2][i]);
+    		}
+    	}
+    	mRenderer.initNappe();
+    }
+    
+    public static int[][] smoothOnce(int[][] tab, int[][] cpy) {
+        int[][] tab2 = new int[tab.length][tab[0].length];
+        for (int i = 1; i < (tab.length - 1); i++) {
+            for (int j = 1; j < (tab[0].length - 1); j++) {
+                if(cpy[i][j] == 0){
+                    tab2[i][j] = (tab[i + 1][j + 1] + tab[i - 1][j - 1] + tab[i + 1][j - 1] + tab[i - 1][j + 1]) / 4;
+                }
+                else{
+                    tab2[i][j] = cpy[i][j];
+                }
+            }
+        }
+        return tab2;
+    }
+    
+    public static int[][] smoothSeveral(int[][] tab, int[][] cpy, int n){
+        for(int i=0;i<n;i++){
+            tab = smoothOnce(tab, cpy);
+        }
+        return tab;
     }
     
     public int[] levels(int[][] values, int tresh){
@@ -1390,7 +1476,7 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
 
     public int[][] toArray(Bitmap bmpOriginal) {
         int width, height, threshold;
-        height = bmpOriginal.getHeight();
+        height = CAMERA_HEIGHT;
         width = CAMERA_WIDTH;
         threshold = LightTreshold*1000;
        Log.d(LOGTAG, "Treshold : "+threshold);
@@ -1407,6 +1493,36 @@ public class MainActivity extends Activity implements UpdateCallbackInterface, A
                 	Log.d(LOGTAG,""+value);
                 }*/
                 bmpBinary[y][x] = (int)((10/255.0)*(value/1000.0));
+            }
+        }
+        return bmpBinary;
+    }
+    
+    public static int[][] toBinary(Bitmap bmpOriginal) {
+        int width, height, threshold;
+        height = bmpOriginal.getHeight();
+        width = CAMERA_WIDTH;
+        threshold = LightTreshold*1000;
+       Log.d(LOGTAG, "Treshold : "+threshold);
+       int[][] bmpBinary = new int[height][width];
+
+        for(int x = 0; x < width; ++x) {
+            for(int y = 0; y < height; ++y) {
+                // get one pixel color
+                int pixel = bmpOriginal.getPixel(x, y);
+                //int value = (int)(((float)Color.red(pixel))*0.2126 + ((float)Color.green(pixel))*0.7152 + ((float)Color.blue(pixel))*0.0722) ;
+                int value = (Color.red(pixel)*212 + Color.green(pixel)*715 + Color.blue(pixel)*722) ;
+                // Gray = 0.2126×Red + 0.7152×Green + 0.0722×Blue
+                //get binary value
+                if(value < threshold){
+                	Log.d("OKLOL","OMG");
+                 bmpBinary[y][x] = LEO_HIGH;
+                    //bmpBinary.setPixel(x, y, 0xFF000000);
+                } else{
+                 bmpBinary[y][x] = LEO_LOW;
+                    //bmpBinary.setPixel(x, y, 0xFFFFFFFF);
+                }
+
             }
         }
         return bmpBinary;

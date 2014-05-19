@@ -25,6 +25,7 @@ Several things to do left, that we will or will not do, depending on if we have 
 - Improve smoothing and display
 - Add textures
 - Add the possibility to zoom into the generated surface
+
 Seen a bug ? Hey, you'd be really nice to report it to us and we'll add it to this list, and maybe never work on it. But again, maybe we will ;)
 
 External Links
@@ -33,4 +34,5 @@ As said, we used other developer's work to build our app, and we thank them sinc
 - Thanks to Vuforia for the amazing tracking (and moaar !) SDK : https://developer.vuforia.com/
 - Thanks to OpenCV for the Computer Vision that we didn't use in the end. But still : http://opencv.org/
 - Thanks to OpenClassrooms, french MOOC website : http://fr.openclassrooms.com/
+
 Check them out ! :)

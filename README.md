@@ -19,7 +19,12 @@ The program consists in several steps, several of them being performed by differ
 TODOES
 -------
 Several things to do left, that we will or will not do, depending on if we have or don't have time :
-
+- Clean the code. It's so dirty. Unused/deprecated methods everywhere.
+- fix memory leaks
+- Fix memory related problems : there is, for example, at the moment the picture is taken, a huge stack of nested methods, that + Vuforia running, + generating OpenGL stuff, some Android smartphones get OutOfMemoryError exceptions, because their VMs can't handle it. So we have to work more in async.
+- Improve smoothing and display
+- Add textures
+- Add the possibility to zoom into the generated surface
 Seen a bug ? Hey, you'd be really nice to report it to us and we'll add it to this list, and maybe never work on it. But again, maybe we will ;)
 
 External Links

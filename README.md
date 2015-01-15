@@ -7,6 +7,8 @@ More precisions
 -------
 The application actually generates a mountain view from a picture of level lines drawn by the user. You actually have to take out a real sheet of paper and draw level lines on it. They don't have to be perfect circle, but the shapes have to be closed, or the 3D generation won't work.
 
+![](https://raw.githubusercontent.com/LeonardA-L/Wailord/master/screens/unfinished2.png)
+
 How does it work ?
 -------
 The program consists in several steps, several of them being performed by different external modules and SDKs.
@@ -15,6 +17,8 @@ The program consists in several steps, several of them being performed by differ
 - The Analyse : the program runs an algorithm that will binarize the picture into stick black and white values, and detects contours in it, and then ranks them according to which contains which. A second algorithm will then smooth the points in between. Note : the original level lines detection and ranking was originally achieved thanks to OpenCV, but we then switched to algorithms of our own creation.
 - 3D Surface generation : the mountain is generated based on the gigantic values table the analyzed picture offers us, using OpenGL. We added colors depending on the altitude of a point, to make it look like a mountain with snow on top :)
 - Tracking : the generated 3D surface is placed on the screen, at the exact position where the drawing was supposed to be. That's augmented reality. To create this effect, we used the quite impressive Vuforia SDK.
+
+![](https://raw.githubusercontent.com/LeonardA-L/Wailord/master/screens/unfinished.png)
 
 TODOES
 -------
